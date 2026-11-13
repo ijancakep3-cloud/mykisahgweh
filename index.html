@@ -1,0 +1,1306 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kursi di Sebelah Jendela</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Caveat:wght@500;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
+<style>
+/* Layout: layar visual novel penuh. Latar adegan di belakang, sprite di tengah, kotak dialog berupa halaman buku tulis di bawah, pilihan berupa post-it yang ditempel di atas adegan. Satu tampilan gelap-senja yang disengaja, jadi tidak ada mode terang. */
+:root{
+  --ink:#14213D;
+  --paper:#F2F6FB;
+  --rule:#BCD0EA;
+  --margin:#E59A9A;
+  --postit:#FFD84D;
+  --coral:#FF6B5E;
+  --night:#0D1526;
+  --mint:#9BE3D3;
+  --pink:#FFB4C6;
+  --f-display:'Baloo 2','Trebuchet MS',system-ui,sans-serif;
+  --f-body:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Caveat','Comic Sans MS',cursive;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:var(--night);color:var(--paper);font-family:var(--f-body);overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--postit);outline-offset:2px}
+#app{position:relative;height:100%;width:100%;overflow:hidden;user-select:none;-webkit-user-select:none}
+
+/* adegan */
+.bg{position:absolute;inset:0;transition:opacity .28s ease;background:var(--night)}
+.bg svg{width:100%;height:100%;display:block}
+.rain{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .6s;
+  background-image:repeating-linear-gradient(105deg,rgba(255,255,255,0) 0 8px,rgba(200,225,255,.28) 8px 9px,rgba(255,255,255,0) 9px 23px);
+  background-size:220px 220px;animation:rain .55s linear infinite}
+.rain.on{opacity:.9}
+@keyframes rain{to{background-position:-48px 220px}}
+.shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(6,10,22,.28),rgba(6,10,22,0) 24%,rgba(6,10,22,0) 46%,rgba(6,10,22,.55))}
+
+/* sprite */
+.stage{position:absolute;inset:0 0 118px 0;pointer-events:none}
+.stage-in{position:relative;height:100%;max-width:1040px;margin:0 auto}
+.slot{position:absolute;bottom:-6px;width:min(44vw,52vh,360px);aspect-ratio:200/282;opacity:0;transform:translateY(14px);transition:opacity .35s,filter .35s,transform .35s}
+.slot.on{opacity:1;transform:none}
+.slot.dim{opacity:.55;filter:saturate(.65) brightness(.78)}
+.slot.speaking{animation:hop .34s ease}
+.slot svg{width:100%;height:100%;display:block;filter:drop-shadow(0 8px 14px rgba(0,0,0,.35))}
+.slot.left{left:1%}
+.slot.right{right:1%}
+.slot.center{left:0;right:0;margin:auto;z-index:2}
+@keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-9px)}100%{transform:translateY(0)}}
+
+/* HUD */
+.hud{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px 12px;
+  padding:12px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.chip{background:rgba(13,21,38,.72);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.hud-r{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.meter{display:flex;align-items:center;gap:8px;background:rgba(13,21,38,.72);border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.meter svg{width:16px;height:16px;flex:none}
+.bar{width:84px;height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--coral);border-radius:99px;transition:width .6s ease}
+.mini{background:rgba(13,21,38,.72);color:var(--paper);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 11px;font-size:13px;font-weight:700}
+.mini:hover{background:rgba(13,21,38,.92)}
+.toast{position:absolute;z-index:6;top:58px;right:max(16px,env(safe-area-inset-right,0px));background:var(--coral);color:#fff;font-weight:800;font-size:14px;padding:7px 14px;border-radius:8px;box-shadow:0 6px 16px rgba(0,0,0,.4);animation:toast 1.9s ease forwards}
+.toast.neg{background:#46526E}
+@keyframes toast{0%{opacity:0;transform:translateY(-8px)}12%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
+
+/* dialog: halaman buku tulis */
+.dialog-wrap{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:0 max(16px,env(safe-area-inset-left,0px)) 16px max(16px,env(safe-area-inset-right,0px));transition:opacity .2s}
+.dialog-wrap.off{opacity:0;pointer-events:none}
+.dialog{position:relative;max-width:900px;margin:0 auto;border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.5);color:var(--ink);
+  padding:24px 28px 16px 68px;min-height:134px;
+  background-color:var(--paper);
+  background-image:linear-gradient(to right,transparent 46px,var(--margin) 46px,var(--margin) 48px,transparent 48px),repeating-linear-gradient(to bottom,transparent 0 29px,var(--rule) 29px 30px);
+  background-position:0 0,0 22px}
+.nametag{position:absolute;top:-17px;left:62px;background:var(--postit);color:var(--ink);font-family:var(--f-display);font-weight:800;font-size:19px;line-height:1.3;padding:2px 18px 0;transform:rotate(-2deg);box-shadow:0 3px 8px rgba(0,0,0,.32);border-radius:2px}
+.text{margin:0;font-size:19px;line-height:30px;min-height:90px;white-space:pre-wrap;font-weight:600}
+.text.narr{font-style:italic;font-weight:500;color:#2B3A5E}
+.next{position:absolute;right:20px;bottom:12px;width:12px;height:12px;border-right:3px solid var(--coral);border-bottom:3px solid var(--coral);transform:rotate(45deg);opacity:0}
+.next.on{opacity:1;animation:bob 1s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(5px) rotate(45deg)}}
+
+/* pilihan: post-it */
+.choice-layer{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;background:rgba(6,10,22,.55);padding:64px max(16px,env(safe-area-inset-right,0px)) 28px max(16px,env(safe-area-inset-left,0px));overflow:auto}
+.choice-in{width:100%;max-width:640px;display:flex;flex-direction:column;gap:14px;margin:auto}
+.q{margin:0 0 4px;font-family:var(--f-hand);font-weight:700;font-size:clamp(26px,5vw,34px);line-height:1.15;color:#fff;text-wrap:balance}
+.pick{display:flex;gap:14px;align-items:flex-start;text-align:left;border:0;border-radius:3px;padding:14px 18px;color:var(--ink);font-size:18px;font-weight:700;line-height:1.35;box-shadow:0 8px 18px rgba(0,0,0,.4);transition:transform .15s}
+.pick b{font-family:var(--f-display);font-size:22px;line-height:1;opacity:.55;flex:none;padding-top:1px}
+.pick span{min-width:0}
+.pick.c0{background:var(--postit);transform:rotate(-.8deg)}
+.pick.c1{background:var(--pink);transform:rotate(.7deg)}
+.pick.c2{background:var(--mint);transform:rotate(-.4deg)}
+.pick:hover,.pick:focus-visible{transform:translateY(-3px) rotate(0)}
+
+/* kartu bab */
+.card{position:absolute;inset:0;z-index:8;display:grid;place-items:center;background:rgba(8,12,24,.93);padding:24px}
+.card-in{max-width:620px;animation:rise .7s ease both}
+.card .eb{margin:0 0 6px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;font-size:14px;color:var(--postit)}
+.card h2{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(36px,8vw,68px);line-height:1;text-wrap:balance}
+.card .sb{margin:14px 0 0;font-family:var(--f-hand);font-weight:700;font-size:clamp(24px,4vw,32px);color:var(--pink)}
+.card .hint{margin:34px 0 0;font-size:13px;opacity:.55}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* post-it besar */
+.postit-layer{position:absolute;inset:0;z-index:7;display:grid;place-items:center;background:rgba(6,10,22,.6);padding:24px}
+.pcard{position:relative;width:min(88vw,430px);background:var(--postit);color:#2A2A2A;padding:34px 28px 24px;transform:rotate(-2.5deg);box-shadow:0 18px 40px rgba(0,0,0,.5);animation:pin .45s cubic-bezier(.2,1.3,.4,1) both}
+.pcard::before{content:"";position:absolute;top:-12px;left:50%;width:96px;height:24px;margin-left:-48px;background:rgba(255,255,255,.55);transform:rotate(2deg)}
+.pcard .from{margin:0 0 8px;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+.pcard p.body{margin:0;font-family:var(--f-hand);font-weight:700;font-size:31px;line-height:1.12}
+.pcard .hint{margin:18px 0 0;font-size:12px;opacity:.55}
+@keyframes pin{from{opacity:0;transform:translateY(-30px) rotate(6deg) scale(.9)}to{opacity:1}}
+
+/* riwayat */
+.log{position:absolute;inset:0;z-index:10;background:rgba(8,12,24,.96);overflow:auto;padding:20px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.log-in{max-width:720px;margin:0 auto}
+.log-top{display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;background:rgba(8,12,24,.96);padding:6px 0 12px}
+.log h3{margin:0;font-family:var(--f-display);font-size:26px}
+.ln{margin:0 0 14px;line-height:1.55;font-size:16px}
+.ln b{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--postit);margin-bottom:2px}
+.ln.n{font-style:italic;color:#B9C6DE}
+.ln.c{color:var(--mint)}
+.ln.p{font-family:var(--f-hand);font-size:24px;color:var(--postit)}
+
+/* judul dan ending */
+.title-screen,.end-screen{position:absolute;inset:0;z-index:9;overflow:auto;
+  background:linear-gradient(100deg,rgba(8,12,24,.92) 0%,rgba(8,12,24,.78) 55%,rgba(8,12,24,.45) 100%)}
+.title-in,.end-in{min-height:100%;max-width:1080px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:28px 40px;
+  padding:48px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+.title-text{flex:1 1 360px;min-width:0;max-width:560px}
+.eyebrow{margin:0 0 14px;font-weight:800;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--mint)}
+.title-text h1{margin:0;font-family:var(--f-display);font-weight:800;font-size:clamp(52px,11vw,112px);line-height:.9;display:flex;flex-direction:column;text-wrap:balance}
+.title-text h1 .mark{color:var(--postit);transform:rotate(-1.5deg);transform-origin:left}
+.tag{margin:22px 0 0;font-size:18px;line-height:1.55;max-width:46ch;color:#DCE6F5}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.primary,.ghost{border-radius:6px;padding:12px 22px;font-size:17px;font-weight:800;border:2px solid var(--postit)}
+.primary{background:var(--postit);color:var(--ink)}
+.primary:hover{background:#FFE47A}
+.ghost{background:transparent;color:var(--postit)}
+.ghost:hover{background:rgba(255,216,77,.14)}
+.howto{margin:22px 0 0;font-size:14px;line-height:1.55;color:#AEBBD3;max-width:50ch}
+.found{margin:8px 0 0;font-size:14px;font-weight:700;color:var(--pink)}
+.title-art{flex:1 1 280px;display:flex;justify-content:center;align-items:flex-end;gap:0;min-width:0}
+.ta{width:min(210px,40vw);flex:none}
+.ta.t{margin-left:-24px}
+.ta svg{width:100%;display:block;filter:drop-shadow(0 8px 14px rgba(0,0,0,.4))}
+.end-in{align-content:center}
+.end-box{flex:1 1 420px;min-width:0;max-width:640px}
+.end-box .tamat{margin:0;font-family:var(--f-hand);font-weight:700;font-size:34px;color:var(--pink)}
+.end-box h2{margin:2px 0 0;font-family:var(--f-display);font-weight:800;font-size:clamp(38px,8vw,72px);line-height:.98;text-wrap:balance}
+.end-box .blurb{margin:18px 0 0;font-size:18px;line-height:1.6;color:#DCE6F5;max-width:50ch}
+.end-box .score{margin:16px 0 0;font-weight:800;color:var(--coral);font-size:15px;letter-spacing:.05em;text-transform:uppercase}
+.tally{display:flex;flex-wrap:wrap;gap:12px;margin:22px 0 0}
+.tl{width:150px;padding:12px 12px 14px;border-radius:3px;color:var(--ink);font-weight:800;font-size:14px;line-height:1.3;box-shadow:0 6px 14px rgba(0,0,0,.35)}
+.tl small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:4px}
+.tl.t0{background:var(--postit);transform:rotate(-1.5deg)}
+.tl.t1{background:var(--pink);transform:rotate(1deg)}
+.tl.t2{background:var(--mint);transform:rotate(-.6deg)}
+.tl.t3{background:#C9B8FF;transform:rotate(1.4deg)}
+.tl.off{background:#2A3552;color:#8C99B5;box-shadow:none}
+
+@media (max-width:560px){
+  .dialog{padding:22px 18px 14px 50px;background-image:linear-gradient(to right,transparent 34px,var(--margin) 34px,var(--margin) 36px,transparent 36px),repeating-linear-gradient(to bottom,transparent 0 29px,var(--rule) 29px 30px)}
+  .nametag{left:44px;font-size:17px}
+  .text{font-size:17px}
+  .bar{width:60px}
+  .stage{inset:0 0 108px 0}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+
+<div id="app">
+  <div class="bg" id="bg"></div>
+  <div class="rain" id="rain"></div>
+  <div class="shade"></div>
+  <div class="stage"><div class="stage-in">
+    <div class="slot left" id="slotL"></div>
+    <div class="slot center" id="slotC"></div>
+    <div class="slot right" id="slotR"></div>
+  </div></div>
+
+  <header class="hud" id="hud">
+    <div class="chip" id="chip">Bab 1</div>
+    <div class="hud-r">
+      <div class="meter" title="Kedekatan Firjan dan Teppi">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21C6 16.5 3 13 3 9.2 3 6.4 5.1 4.5 7.6 4.5c1.7 0 3.4.9 4.4 2.5 1-1.6 2.7-2.5 4.4-2.5C18.9 4.5 21 6.4 21 9.2 21 13 18 16.5 12 21Z" fill="#FF6B5E"/></svg>
+        <span>Kedekatan</span>
+        <div class="bar"><i id="barFill"></i></div>
+      </div>
+      <button class="mini" id="btnLog" type="button">Riwayat</button>
+      <button class="mini" id="btnSpeed" type="button">Teks: Normal</button>
+      <button class="mini" id="btnMenu" type="button">Menu</button>
+    </div>
+  </header>
+  <div class="toast" id="toast" hidden></div>
+
+  <section class="dialog-wrap" id="dialogWrap">
+    <div class="dialog">
+      <div class="nametag" id="nameTag">Firjan</div>
+      <p class="text" id="text"></p>
+      <span class="next" id="nextInd"></span>
+    </div>
+  </section>
+
+  <div class="choice-layer" id="choiceLayer" hidden></div>
+  <div class="postit-layer" id="postitLayer" hidden></div>
+  <div class="card" id="card" hidden></div>
+  <div class="log" id="log" hidden></div>
+
+  <div class="title-screen" id="title">
+    <div class="title-in">
+      <div class="title-text">
+        <p class="eyebrow">Game story santai · Kelas 11</p>
+        <h1><span>Kursi di</span><span>Sebelah</span><span class="mark">Jendela</span></h1>
+        <p class="tag">Firjan selalu telat di hari Senin. Teppi baru pindah dan belum punya teman satu pun. Kursi kosong di kelas cuma ada satu.</p>
+        <div class="btns">
+          <button class="primary" id="btnStart" type="button">Mulai Cerita</button>
+          <button class="ghost" id="btnContinue" type="button" hidden>Lanjutkan</button>
+        </div>
+        <p class="howto">Ketuk, klik, atau tekan Spasi untuk lanjut. Tekan 1, 2, atau 3 untuk memilih. Ada 9 bab dan 4 ending, satu di antaranya tersembunyi. Pilihanmu menentukan seberapa dekat mereka.</p>
+        <p class="found" id="foundCount"></p>
+      </div>
+      <div class="title-art" id="titleArt"></div>
+    </div>
+  </div>
+
+  <div class="end-screen" id="endScreen" hidden></div>
+</div>
+
+<script id="story">
+/* ===== CERITA ===== */
+const N='N',F='F',T='T',R='R',D='D',B='B',S='S',K='K';
+
+function endingKey(s){
+  const f=s.flags;
+  if(s.love>=72 && f.sketch && f.janji && f.berani) return 'S';
+  if(s.love>=52 && (f.berani||f.menunggu)) return 'A';
+  if(s.love>=28) return 'B';
+  return 'C';
+}
+
+const ENDINGS={
+  A:{name:'Kursi di Sebelah Jendela',blurb:'Teppi pulang dari Bandung, dan jawabannya iya. Kursi itu tidak pernah kosong lagi.'},
+  B:{name:'Dekat, Tapi Belum Dinamai',blurb:'Mereka tidak butuh nama untuk apa yang mereka punya. Belum. Masih ada satu semester lagi.'},
+  C:{name:'Teman Sebangku yang Baik',blurb:'Tidak semua cerita berakhir seperti komik. Tapi Firjan belajar datang tepat waktu, dan itu awal yang baik.'},
+  S:{name:'Sisanya, Kita yang Isi',blurb:'Ternyata cerita ini sudah digambar. Dua halaman terakhirnya masih kosong, dan mereka berdua yang akan mengisinya.'}
+};
+
+const EA=[
+  {bg:'gerbang'},{stage:['F','T']},
+  [N,'Desember datang lebih cepat daripada yang kukira.'],
+  [N,'Pagi itu aku mengantar Teppi ke stasiun dengan sepeda yang, untuk pertama kalinya, tidak terlambat. Di keranjang depan ada termos kecil berisi teh manis. Manis banget. Terlalu manis, mungkin.'],
+  [T,'Kamu bawa teh manis?','o'],
+  [F,'Janji dicatat. Kadaluarsanya tidak ada, ingat?','m'],
+  [T,'Kamu ini... Terima kasih, Firjan.','h'],
+  [F,'Dua minggu ya. Aku mulai hitung dari sekarang.','n'],
+  [T,'Hitungnya pakai jari saja. Cuma empat belas.','m'],
+  {if:s=>s.flags.berani?[
+    [T,'Dan Firjan, jawabanku masih sama seperti malam di atap itu. Jadi kamu tidak perlu cemas.','s'],
+    [F,'Aku tidak cemas. Aku cuma... cemas sedikit.','o'],
+    [T,'Sedikit?','m'],
+    [F,'Banyak.','l'],
+    [T,'Sampai jumpa dua minggu lagi, pacarku yang suka telat.','h'],
+    [N,'Kereta itu berangkat, dan aku berdiri di peron sambil tersenyum seperti orang yang baru memenangkan undian. Dua minggu lagi. Aku bisa.']
+  ]:[
+    [T,'Oh iya. Soal hal yang kamu bilang mau kamu katakan setelah aku pulang... jawabannya akan kubawa pulang. Bersama oleh-oleh.','s'],
+    [F,'Oleh-oleh jawaban?','o'],
+    [T,'Pokoknya tunggu saja.','h'],
+    [N,'Kereta itu berangkat, dan aku berdiri di peron memikirkan satu hal: dua minggu ini akan menjadi dua minggu paling lambat dalam hidupku.']
+  ]},
+  [N,'Dua minggu berlalu seperti siput yang berjalan mundur. Setiap pagi aku tiba di sekolah jam 06.40.'],
+  [S,'Firjan! Kamu tidak telat. Ini hari bersejarah. Bapak mau foto dulu.','o'],
+  {bg:'kelas'},
+  [N,'Senin pertama setelah libur, kursi di sebelah jendela terisi lagi. Ada tas biru yang kukenal, dan selembar post-it kuning menempel di mejaku.'],
+  {postit:'Aku pulang! Dan kalau kamu masih ragu: jawabanku tetap iya. Komikku dipuji mentor. Ceritanya tentang dua anak yang telat di hari Senin. Yang satu masih sering telat. — Teppi'},
+  [N,'Aku menoleh. Teppi duduk di sebelahku, pura-pura serius membaca buku. Telinganya merah.'],
+  [F,'Hai, Teppi.','h'],
+  [T,'Hai, Firjan. Kamu telat.','m'],
+  [F,'Hari ini aku tepat waktu!','o'],
+  [T,'Aku tahu. Aku cuma mau dengar kamu membela diri.','l'],
+  [N,'Di luar jendela, awan berarak pelan. Kali ini awannya memang bagus. Aku tidak perlu berbohong.'],
+  {end:'A'}
+];
+
+const ES=[
+  {bg:'kelas'},{stage:['F','T']},
+  [N,'Teppi pulang dari Bandung membawa dua hal: sertifikat workshop, dan sebuah map biru yang jauh lebih tebal daripada saat dia berangkat.'],
+  [N,'Sore itu kelas sudah kosong. Hanya kami berdua, cahaya jingga dari jendela, dan suara Raka yang samar-samar menyanyi di koridor.'],
+  [T,'Ada yang mau kutunjukkan. Tapi kamu harus janji tidak ketawa.','s'],
+  [F,'Janji. Lagi pula, kamu tahu aku orang yang menepati janji. Terutama janji teh manis.','m'],
+  [N,'Map itu berisi dua puluh empat halaman komik. Halaman pertama: seorang cowok berambut berantakan di depan gerbang yang tertutup. Halaman kedua: seorang cewek berjepit kuning. Halaman ketiga: tos yang canggung.'],
+  [N,'Aku membaca semuanya. Pulpen keramat. Hujan di halte. Cilok di pasar kaget. Foto stiker. Kafe Jendela. Atap sekolah. Semua ada, digambar dengan garis yang sudah kukenal.'],
+  [F,'Teppi... ini kita.','o'],
+  [T,'Ini cerita kita. Aku cuma menggambarnya. Tapi awalnya kamu yang mulai.','s'],
+  [N,'Di sampul belakang tertempel dua strip foto stiker. Satu dari pasar kaget, satu dari festival. Aku baru sadar, dia membawanya ke Bandung selama dua minggu.'],
+  [N,'Di halaman terakhir ada dua kotak kosong. Di bawahnya tertulis dengan pensil, kecil sekali: “Sisanya, kita yang isi.”'],
+  [F,'Boleh aku ikut mengisinya? Mulai sekarang?','n'],
+  [T,'Boleh. Tapi naskahnya jangan setengah jalan seperti tugas Bu Sari kemarin.','m'],
+  [F,'Aku akan selesaikan. Deadline itu bukan musuh.','h'],
+  [T,'Kamu bilang deadline bukan musuh?! Siapa kamu dan ke mana Firjan yang asli?','o'],
+  [F,'Firjan yang asli sedang belajar jadi orang yang tepat waktu. Demi kamu.','s'],
+  [T,'Hehe.','l'],
+  [N,'Dia menggeser kursinya sedikit lebih dekat ke jendela, sehingga bahu kami hampir bersentuhan. Hampir. Tapi tidak ada yang bergeser menjauh.'],
+  [N,'Di luar, awan berarak pelan. Dan di sebelahku, kursi di sebelah jendela itu tidak akan pernah kosong lagi.'],
+  {end:'S'}
+];
+
+const EB=[
+  {bg:'gerbang'},{stage:['F','T']},
+  [N,'Desember datang. Teppi berangkat ke Bandung untuk dua minggu.'],
+  [N,'Dua minggu itu penuh dengan pesan singkat. Foto sketsa. Foto makanan. Foto jam yang menunjukkan dia belum tidur jam dua pagi.'],
+  [N,'Satu pesannya masih kuingat: “Teh manis di sini terlalu biasa. Aku kangen kantin kita.”'],
+  [N,'Aku membaca pesan itu sepuluh kali. Mungkin dua belas.'],
+  {bg:'kelas'},
+  [N,'Senin berikutnya, Teppi pulang. Ada tas biru di kursi sebelah jendela dan senyum yang kukenal.'],
+  [T,'Hai. Aku pulang.','h'],
+  [F,'Oleh-oleh kamu mana?','m'],
+  [T,'Aku bawa. Kamu tidak lihat?','m'],
+  [F,'Maksudku oleh-oleh yang bisa dimakan.','o'],
+  [T,'Ada keripik. Tapi sudah diambil Raka.','l'],
+  [N,'Kami tertawa. Dan di sela tawa itu, ada sesuatu yang belum kami namai.'],
+  [T,'Firjan, soal hal-hal yang belum kita bahas...','s'],
+  [F,'Mungkin sebaiknya nanti. Kita punya banyak waktu.','n'],
+  [T,'Iya. Kursi sebelah jendela ini masa sewanya panjang.','h'],
+  [N,'Mungkin tidak semua hal perlu nama sekarang. Kadang cukup tahu bahwa seseorang menyisakan kursi untukmu, dan kamu menyisakan kursi untuknya.'],
+  [N,'Semester depan masih panjang. Dan aku punya cukup teh manis untuk menunggu.'],
+  {end:'B'}
+];
+
+const EC=[
+  {bg:'gerbang'},{stage:['F','T']},
+  [N,'Desember datang. Teppi berangkat ke Bandung untuk workshop. Aku, Raka, dan Nadia mengantarnya sampai gerbang sekolah.'],
+  [N,'Dua minggu kemudian dia pulang membawa oleh-oleh untuk satu kelas: keripik, gantungan kunci, dan senyum yang lebih lebar daripada terakhir kali kulihat.'],
+  [N,'Senyum itu bukan hanya untukku. Dan itu tidak apa-apa.'],
+  {bg:'kelas'},
+  [F,'Gimana Bandung?','n'],
+  [T,'Seru banget! Aku belajar banyak. Oh iya, kamu masih ingat teh manisnya?','h'],
+  [F,'Masih. Aku catat dari hari pertama.','m'],
+  [N,'Kami masih teman sebangku. Masih saling pinjam pulpen. Tapi ada jarak kecil yang entah bagaimana tidak kutemukan cara menyeberanginya.'],
+  [N,'Mungkin karena beberapa kesempatan lewat begitu saja: payung yang tidak kutawarkan, pertanyaan yang tidak kutanyakan, janji yang tidak kutepati.'],
+  [N,'Tapi aku belajar satu hal. Orang yang kita pedulikan tidak butuh kata-kata besar. Mereka cuma ingin diperhatikan.'],
+  {bg:'gerbang'},{stage:['F']},
+  [N,'Senin berikutnya, aku tiba di sekolah jam 06.40. Pak Joko nyaris menjatuhkan peluitnya.'],
+  [S,'Firjan?! Kamu sakit?','o'],
+  [F,'Tidak, Pak. Cuma sedang belajar tepat waktu.','h'],
+  {bg:'kelas'},
+  [N,'Di mejaku sudah menempel selembar post-it kuning.'],
+  {postit:'Tumben tepat waktu. Aku bangga. Teh manisnya masih berlaku buat besok. — Teppi'},
+  [N,'Kursi di sebelah jendela masih milik kami berdua. Siapa tahu, semester depan, ceritanya akan berlanjut.'],
+  {end:'C'}
+];
+
+const chapters=[
+
+/* ---------- BAB 1 ---------- */
+{label:'Bab 1',title:'Telat di Hari Senin',sub:'Gerbang tutup, kursi kosong',nodes:[
+  {bg:'gerbang'},{stage:['F']},
+  [N,'Senin pagi. Alarm HP-ku sudah bunyi tiga kali, dan tiga kali juga aku mematikannya sambil berpikir “lima menit lagi”.'],
+  [N,'Waktu akhirnya benar-benar bangun, jam dinding menunjukkan 06.52. Gerbang sekolah ditutup jam 07.00. Jarak dari rumah ke sekolah: lima belas menit naik sepeda, kalau tidak ada yang menghalangi.'],
+  [F,'Oke Firjan. Ini cuma soal kecepatan. Dan keberuntungan. Terutama keberuntungan.','n'],
+  [N,'Aku mengayuh sepeda seperti sedang dikejar anjing tetangga. Hasilnya: 07.03. Gerbang sudah tertutup rapat, dan Pak Joko berdiri di baliknya dengan tangan di pinggang.'],
+  {stage:['F','T']},
+  [N,'Tapi aku tidak sendirian. Di depan gerbang ada seorang cewek yang memeluk map biru dan menatap papan nama sekolah seperti sedang membaca soal ujian.'],
+  [N,'Seragamnya masih terlihat baru, rambut sebahunya dijepit klip kuning kecil. Aku belum pernah melihatnya.'],
+  [T,'Permisi... ini SMA Negeri 7, kan? Aku tidak salah gedung?','s'],
+  [F,'Betul, ini SMA Negeri 7. Kamu anak baru?','n'],
+  [T,'Iya. Hari ini hari pertamaku. Dan aku sudah telat. Awal yang bagus, ya.','s'],
+  [S,'Dua-duanya telat! Kompak sekali.','m'],
+  [S,'Firjan, ini sudah keberapa kali bulan ini? Bapak sampai hafal bunyi rem sepedamu.','m'],
+  [F,'Baru tiga kali, Pak. Itu pun semuanya hari Senin.','m'],
+  [S,'Nah, itu namanya konsisten. Tulis nama di buku, terus masuk. Dan kamu yang anak baru, jangan takut. Bapak tidak menggigit.','h'],
+  {choice:{q:'Sambil menulis nama di buku telat, aku ingin bilang sesuatu ke cewek di sebelahku...',opts:[
+    {t:'Kenalan dengan ramah',d:5,then:[
+      [F,'Aku Firjan, kelas 11-B. Kamu kelas berapa? Siapa tahu sekelas.','h'],
+      [T,'Teppi. Kelas 11-B juga, kata surat penerimaannya.','s'],
+      [F,'Serius? Berarti kita bakal dihukum bareng... maksudku, sekelas bareng.','l'],
+      [T,'Hehe. Salah ucap, tapi aku paham.','h']
+    ]},
+    {t:'Ajak tos “senasib”',d:4,then:[
+      [F,'Tos dulu! Selamat datang di Klub Telat Senin. Iuran gratis, sanksi ditanggung bersama.','l'],
+      [T,'Eh, tos...? Baiklah.','o'],
+      [N,'Tos-nya agak canggung, tapi dia tertawa kecil. Itu sudah cukup untuk jadi awal yang bagus.'],
+      [T,'Aku Teppi. Anggota paling baru Klub Telat Senin.','h']
+    ]},
+    {t:'Diam saja dan fokus menulis',d:-2,then:[
+      [N,'Aku menulis namaku, lalu menunduk. Entah kenapa lidahku kaku. Mungkin karena belum sarapan.'],
+      [T,'Err... aku Teppi. Kamu?','s'],
+      [F,'Firjan.','n'],
+      [N,'Jawabanku pendek banget. Satu kata. Rekor baru. Aku menyesal sedikit.']
+    ]}
+  ]}},
+  {bg:'kelas'},
+  [N,'Kelas 11-B pagi itu sudah ramai. Raka melambai dari bangku belakang sambil memperagakan gerakan menggorok leher. Artinya: aku dalam bahaya.'],
+  [B,'Firjan. Terlambat lagi. Ibu mulai curiga sepedamu punya fitur snooze.','m'],
+  [F,'Maaf, Bu. Sepedanya tidak ada tombol snooze. Saya yang ada.','h'],
+  [B,'Hmm. Duduk. Dan ini murid baru kita. Perkenalkan dirimu, Nak.','n'],
+  [T,'Halo semua. Namaku Teppi, pindahan dari Bandung. Aku suka menggambar dan... teh manis. Mohon bantuannya.','s'],
+  [N,'Kelas hening dua detik. Lalu Raka berteriak: “TEH MANIS ITU BAGUS!” Seluruh kelas tertawa, termasuk Teppi. Bahunya yang tegang pelan-pelan turun.'],
+  [B,'Teppi, kamu duduk di kursi kosong sebelah jendela itu. Di sebelah Firjan. Sejak Dimas pindah ke kelas A, bangku itu memang kosong.','n'],
+  [N,'Kursi di sebelah jendela. Selama tiga bulan kursi itu cuma jadi tempat menaruh tasku.'],
+  [N,'Teppi meletakkan map biru di meja, lalu duduk pelan-pelan. Cahaya dari jendela jatuh di rambutnya, dan jepit kuningnya berkilat kecil.'],
+  [T,'Maaf, boleh aku pinjam pulpen? Punyaku ada di tas, dan tasku... entah di mana.','s'],
+  {choice:{q:'Aku meminjamkan...',opts:[
+    {t:'Pulpen gel biru kesayanganku',d:5,then:[
+      [N,'Pulpen itu satu-satunya yang tintanya lancar. Aku tidak pernah meminjamkannya ke siapa pun. Tapi tanganku sudah bergerak sendiri.'],
+      [F,'Pakai yang ini saja. Tintanya enak. Tapi jangan hilang ya, ini pulpen keramatku.','h'],
+      [T,'Siap. Akan kujaga seperti pulpen keramat.','h']
+    ]},
+    {t:'Pensil mekanik cadangan',d:2,then:[
+      [F,'Nih, pensil. Aku punya cadangan, tenang saja.','n'],
+      [T,'Terima kasih ya.','n']
+    ]},
+    {t:'Bercanda: “Sewa seribu per jam”',d:1,then:[
+      [F,'Sewa seribu per jam. Ada diskon untuk anak baru.','m'],
+      [T,'Eh? Serius?','o'],
+      [F,'Bercanda. Pakai saja.','l'],
+      [T,'Hahaha, kamu menyebalkan. Tapi aku paham.','h']
+    ]}
+  ]}},
+  [N,'Jam pelajaran pertama lewat sangat lambat. Bu Sari bicara soal struktur teks narasi, sementara aku sibuk berpikir bagaimana cara bernapas normal di sebelah orang yang belum kukenal.'],
+  [N,'Waktu bel istirahat berbunyi, ada selembar post-it kuning menempel di pojok bukuku.'],
+  {postit:'Makasih ya sudah mau jadi teman sebangku pertamaku di sini. Besok aku traktir teh manis. :)',from:'Catatan dari Teppi'},
+  [N,'Aku melirik ke sebelah. Teppi sudah sibuk membereskan buku, pura-pura tidak melihat. Telinganya sedikit merah.'],
+  [F,'Hei, Teppi.','n'],
+  [T,'Ya?','s'],
+  [F,'Teh manisnya jangan lupa. Aku catat.','m'],
+  [T,'Iya, iya. Aku tidak akan lupa.','h']
+]},
+
+/* ---------- BAB 2 ---------- */
+{label:'Bab 2',title:'Kantin dan Kompor Raka',sub:'Teh manis, bekal, dan buku gambar',nodes:[
+  {bg:'kantin'},{stage:['F']},
+  [R,'Bro! Lo sebangku sama anak baru dan lo cuma diam kayak patung selamat datang?','o'],
+  [F,'Gue gak diam. Gue bilang “teh manisnya jangan lupa”.','n'],
+  [R,'Itu bukan percakapan. Itu catatan belanja.','m'],
+  [D,'Raka, jangan ganggu Firjan. Mukanya sudah kayak kepiting rebus.','h'],
+  [F,'Muka gue normal. Itu efek sambal.','n'],
+  [N,'Nadia, ketua kelas sekaligus pengawas moral seluruh penghuni 11-B, duduk di sebelah Raka sambil membuka kotak bekal sebesar bantal.'],
+  [D,'Eh, lihat Teppi. Dia duduk sendirian di pojok. Dari tadi belum ada yang ngajak ngobrol selain kita, kan?','b'],
+  {stage:['F','T']},
+  [N,'Meja pojok kantin. Teppi duduk menghadap buku gambar kecil, tapi pensilnya tidak bergerak. Dia menatap keramaian kantin seperti orang yang sedang menghitung peluang bertahan hidup.'],
+  {choice:{q:'Teppi sendirian di pojok. Aku...',opts:[
+    {t:'Belikan teh manis duluan, janjinya kutebus',d:6,then:[
+      [N,'Aku membeli dua teh manis dingin dari Bu Eni, lalu berjalan ke meja pojok dengan langkah yang kubuat sesantai mungkin.'],
+      [K,'Cieee. Dua gelas, Nak? Gulanya biasa, ya.','m'],
+      [F,'Dua gelas, Bu. Gulanya terserah. Yang penting jangan sampai pahit.','n'],
+      [F,'Nih. Aku yang traktir duluan. Janjimu tetap berlaku buat besok.','h'],
+      [T,'Kamu serius? Padahal aku yang janji duluan.','o'],
+      [F,'Janji dicatat. Kadaluarsanya tidak ada.','m'],
+      [T,'Baiklah. Makasih, Firjan.','h']
+    ]},
+    {t:'Ajak gabung ke meja kami',d:4,then:[
+      [F,'Teppi! Gabung ke meja kami saja. Ada Raka, orangnya berisik tapi tidak berbahaya.','h'],
+      [R,'Gue dengar itu.','m'],
+      [T,'Boleh? Aku tidak mengganggu?','s'],
+      [D,'Tentu saja boleh! Duduk sini. Aku Nadia.','h'],
+      [N,'Dalam lima menit, Raka sudah bercerita soal tiga kali dia terjebak di lift sekolah. Sekolah ini tidak punya lift. Teppi tertawa untuk pertama kalinya hari itu.']
+    ]},
+    {t:'Pura-pura sibuk lihat HP',d:-3,then:[
+      [N,'Aku menunduk menatap layar HP yang bahkan sedang mati. Entah kenapa aku takut kalau mendekat, aku akan salah ngomong lagi.'],
+      [R,'Bro, layar lo item. Lo lagi ngeliatin apa? Kematian?','m'],
+      [N,'Aku tidak punya jawaban yang bagus. Teppi tetap sendirian sampai bel berbunyi.']
+    ]}
+  ]}},
+  {bg:'kelas'},
+  [N,'Sore itu, setelah bel pulang, kelas hampir kosong. Teppi masih duduk di tempatnya, menggambar dengan serius. Aku pura-pura membereskan tas sambil mengintip.'],
+  [T,'Kamu lihat apa?','s'],
+  [F,'Eh? Lihat... awan. Di luar jendela. Awannya bagus.','o'],
+  [T,'Sekarang mendung total, Firjan. Awan yang mana yang bagus?','m'],
+  [N,'Skak mat. Aku berhenti berbohong.'],
+  {choice:{q:'Soal buku gambar itu...',opts:[
+    {t:'Jujur dan minta izin untuk lihat',d:6,f:'sketch',then:[
+      [F,'Oke, aku jujur. Aku penasaran sama yang kamu gambar. Boleh lihat? Kalau tidak mau, tidak apa-apa.','n'],
+      [T,'...Boleh. Tapi jangan ketawa ya.','s'],
+      [N,'Dia menyodorkan buku kecil itu. Isinya komik empat panel: seorang cewek berjepit kuning menghadapi hari pertama sekolah. Di panel terakhir, ada cowok berambut berantakan menaiki sepeda dengan wajah panik.'],
+      [F,'Itu... aku?','o'],
+      [T,'Itu cowok yang telat pagi tadi. Bukan kamu. Mungkin. Mirip sih.','s'],
+      [F,'Panel ini bagus banget. Sumpah. Gambarnya hidup.','h'],
+      [T,'Beneran? Kamu orang pertama yang lihat ini selain ibuku.','h']
+    ]},
+    {t:'Bilang gambarnya pasti bagus, tanpa melihat',d:2,then:[
+      [F,'Aku yakin gambarmu bagus. Tidak perlu lihat, aku percaya.','n'],
+      [T,'Kok bisa yakin?','s'],
+      [F,'Orang yang bawa buku gambar ke mana-mana pasti serius.','m'],
+      [T,'Hehe, benar juga. Terima kasih.','h']
+    ]},
+    {t:'Rebut bukunya sambil bercanda',d:-4,then:[
+      [F,'Pinjam dulu bukunya!','l'],
+      [T,'Eh! Jangan!','o'],
+      [N,'Dia menarik bukunya cepat-cepat, dan wajahnya berubah. Bukan marah, lebih seperti anak kucing yang kaget. Aku langsung merasa seperti penjahat.'],
+      [F,'Maaf. Aku kebanyakan bercanda.','b'],
+      [T,'Tidak apa-apa. Cuma... itu agak pribadi buatku.','b']
+    ]}
+  ]}},
+  [N,'Hari pertama Teppi di sekolah. Aku sudah belajar satu hal: dia tidak gampang dibuka. Tapi mungkin itu yang bikin dia menarik.']
+]},
+
+/* ---------- BAB 3 ---------- */
+{label:'Bab 3',title:'Bola yang Salah Sasaran',sub:'Jam olahraga, hari Kamis',nodes:[
+  {bg:'lapangan'},{stage:['F','T']},
+  [N,'Kamis siang. Pelajaran olahraga. Pak Anwar menyuruh kami latihan lemparan bola basket berpasangan, lalu menghilang ke ruang guru untuk minum kopi.'],
+  [R,'Hari ini gue bakal membuktikan bahwa gue pemain NBA yang tersesat di SMA.','m'],
+  [N,'Raka melempar bola ke ring. Bola memantul di papan, terbang ke samping, dan mendarat tepat di botol minum Nadia. Isinya tumpah ke sepatu Raka sendiri.'],
+  [D,'Itu hukum karma, Raka.','m'],
+  [R,'Itu hukum fisika!','o'],
+  [T,'Firjan... aku serius, aku tidak bisa olahraga sama sekali. Bolaku selalu pergi ke arah yang salah.','s'],
+  [F,'Tidak mungkin separah itu.','n'],
+  [N,'Teppi memegang bola, menarik napas, lalu melemparnya. Bola itu melengkung aneh seperti sedang kabur dari sesuatu, dan masuk ke semak-semak di pinggir lapangan.'],
+  [F,'...Oke. Sedikit separah itu.','o'],
+  [T,'Sudah kubilang!','l'],
+  {choice:{q:'Teppi menutup wajah dengan kedua tangan. Aku...',opts:[
+    {t:'Ajari pelan-pelan, mulai dari posisi tangan',d:6,f:'olahraga',then:[
+      [F,'Coba pegang bolanya begini. Siku di bawah, jangan angkat bahu. Terus lihat ke ring, bukan ke bola.','n'],
+      [T,'Begini?','s'],
+      [F,'Hampir. Sikumu sedikit lebih turun. Nah, itu. Sekarang dorong, jangan dilempar.','n'],
+      [N,'Bola itu terbang dengan lengkungan yang jauh lebih meyakinkan, menyentuh pinggir ring, lalu jatuh. Hampir masuk.'],
+      [T,'HAMPIR MASUK! Firjan, hampir masuk!','l'],
+      [F,'Itu progres! Jangan lupa, aku guru basket pertamamu.','h'],
+      [T,'Guru basket yang telat tiap Senin.','m']
+    ]},
+    {t:'Ledek sedikit, lalu kasih semangat',d:3,f:'olahraga',then:[
+      [F,'Itu bukan lemparan. Itu misi penyelamatan semak-semak.','m'],
+      [T,'Jahat!','o'],
+      [F,'Bercanda. Sini, coba lagi. Pelan-pelan.','h'],
+      [N,'Dia mencoba lagi. Hasilnya lebih baik, meski tetap tidak masuk. Tapi dia tertawa, dan itu cukup.']
+    ]},
+    {t:'Bilang lebih baik duduk saja, biar Raka yang ajari',d:-3,then:[
+      [F,'Mending kamu duduk saja. Nanti Raka kuminta mengajari.','n'],
+      [T,'Oh... baiklah.','b'],
+      [R,'Gue? Gue bahkan tidak bisa mengajari diri gue sendiri.','o'],
+      [N,'Teppi duduk di pinggir lapangan sampai pelajaran selesai. Aku merasa ada sesuatu yang baru saja kulewatkan.']
+    ]}
+  ]}},
+  {if:s=>s.flags.olahraga?[
+    [N,'Pulang dari lapangan, aku menemukan sebotol air mineral dingin di mejaku. Di tutupnya tertempel post-it mungil.'],
+    {postit:'Terima kasih sudah jadi guru basket yang sabar. Besok aku lempar lagi. Semak-semak, bersiaplah.',from:'Catatan dari Teppi'},
+    [F,'Teppi, ini air buat aku?','n'],
+    [T,'Itu bayaran guru. Maaf cuma segitu.','s'],
+    [F,'Bayarannya terlalu mahal. Aku jadi harus mengajarimu lagi minggu depan.','m'],
+    [T,'Itu strategiku.','l']
+  ]:[
+    [N,'Pelajaran selesai. Teppi membereskan barang tanpa banyak bicara. Aku ingin bilang sesuatu, tapi bel sudah berbunyi dan Raka menyeretku ke kantin.'],
+    [N,'Rasanya ada percakapan yang tertinggal di lapangan, dan aku tidak tahu bagaimana cara mengambilnya kembali.']
+  ]}
+]},
+
+/* ---------- BAB 4 ---------- */
+{label:'Bab 4',title:'Tugas Kelompok Berdua',sub:'Perpustakaan, kipas angin tua, dan deadline',nodes:[
+  {bg:'kelas'},{stage:['F','T']},
+  [B,'Anak-anak, tugas semester ini: buat cerita bergambar tentang kehidupan di sekolah. Dikerjakan berdua, dengan teman sebangku. Waktunya tiga minggu.','n'],
+  [R,'Bu, kalau teman sebangku saya kabur dari sekolah bagaimana?','m'],
+  [B,'Teman sebangkumu itu Nadia, Raka. Mana mungkin dia kabur.','n'],
+  [D,'Iya. Malah aku yang bakal mengejar kamu ke mana pun.','m'],
+  [N,'Teppi melirikku. Mata kami bertemu sepersekian detik, lalu dia buru-buru menunduk. Tugas ini seperti dibuat khusus untuknya.'],
+  {bg:'perpus'},
+  [T,'Ide ceritanya sudah kamu pikirkan?','s'],
+  [F,'Belum. Aku orangnya santai. Ide baru muncul kalau deadline sudah dekat.','m'],
+  [T,'Itu bukan strategi yang bagus.','n'],
+  [F,'Aku tahu. Tapi itu strategi yang konsisten.','h'],
+  [N,'Perpustakaan sore itu sepi. Hanya ada kami berdua, Bu Lina penjaga perpustakaan yang tertidur dengan topi menutupi wajah, dan kipas angin tua yang berputar malas.'],
+  [T,'Jadi, cerita apa yang menurutmu menarik?','n'],
+  {choice:{q:'Usul ceritaku...',opts:[
+    {t:'Dua anak yang telat di hari yang sama, lalu jadi teman sebangku',d:6,f:'cerita_kita',then:[
+      [F,'Bagaimana kalau tentang dua anak yang telat ke sekolah di hari yang sama, terus mereka duduk bersebelahan di kursi dekat jendela?','h'],
+      [T,'Itu...','o'],
+      [N,'Dia tidak langsung menjawab. Pipinya memerah dan dia buru-buru membuka buku sketsa.'],
+      [T,'Itu ide bagus sih. Aku bisa membayangkan panel pertamanya.','s'],
+      [F,'Judulnya: Kursi di Sebelah Jendela.','h'],
+      [T,'Lumayan. Aku suka judulnya.','h']
+    ]},
+    {t:'Hantu perpustakaan yang kena denda',d:2,then:[
+      [F,'Bagaimana kalau cerita hantu perpustakaan? Hantunya cuma mau pinjam buku, tapi lupa bawa kartu.','m'],
+      [T,'Hahaha. Hantu yang kena denda?','l'],
+      [F,'Denda abadi!','l'],
+      [T,'Lucu sih. Nanti kita lihat dulu ya.','h']
+    ]},
+    {t:'“Terserah kamu saja”',d:-2,then:[
+      [F,'Terserah kamu saja deh. Aku ngikut.','n'],
+      [T,'Oh... baiklah.','b'],
+      [N,'Kedengarannya santai, tapi entah kenapa aku merasa baru saja menyerahkan kemudi kapal ke orang yang bahkan belum yakin ingin berlayar.']
+    ]}
+  ]}},
+  [N,'Seminggu berlalu. Teppi sudah menyelesaikan sketsa enam panel. Aku baru menulis dua kalimat.'],
+  [N,'Sore itu Raka menghadangku di lorong sambil memantulkan bola futsal.'],
+  [R,'Futsal sekarang. Anak kelas sebelah nantangin. Lo harus ikut.','m'],
+  [N,'HP-ku bergetar. Pesan dari Teppi: “Aku di perpus ya. Tidak buru-buru kok.”'],
+  {choice:{q:'Futsal atau perpustakaan?',opts:[
+    {t:'Tolak futsal, temani Teppi',d:6,f:'setia',then:[
+      [F,'Ka, sori. Gue ada tugas. Futsalnya minggu depan.','n'],
+      [R,'Lo yang bener? Lo nolak futsal? Lo sakit?','o'],
+      [F,'Mungkin. Sakit tanggung jawab.','m'],
+      [N,'Aku tiba di perpustakaan sepuluh menit kemudian. Teppi mengangkat wajah dengan mata membulat.'],
+      [T,'Kamu datang? Aku kira kamu bakal futsal.','o'],
+      [F,'Janji adalah janji. Lagi pula, aku belum nulis apa-apa.','h'],
+      [T,'Yang terakhir itu yang bikin aku yakin kamu bakal datang.','l']
+    ]},
+    {t:'Ikut futsal, minta maaf nanti',d:-5,then:[
+      [F,'Oke, gue ikut!','h'],
+      [N,'Futsalnya seru. Skor 5-3 untuk kami. Tapi di bangku pinggir lapangan, HP-ku bergetar lagi. “Aku tunggu sampai jam lima ya.” Jam di layar: 17.40.'],
+      [N,'Keesokan harinya Teppi tersenyum seperti biasa. Terlalu biasa. Aku tahu ada yang berbeda.'],
+      [F,'Teppi, soal kemarin... maaf.','b'],
+      [T,'Tidak apa-apa. Aku mengerti kok.','n']
+    ]},
+    {t:'Ajak Raka sekalian ke perpustakaan',d:2,then:[
+      [F,'Ka, ikut ke perpus saja. Bantuin bikin tugas.','n'],
+      [R,'Gue? Perpus? Boleh, asal ada colokan.','m'],
+      [N,'Kerja kelompok berubah jadi acara ngobrol. Teppi tetap tersenyum, tapi gambarnya hanya maju satu panel sore itu.']
+    ]}
+  ]}}
+]},
+
+/* ---------- BAB 5 ---------- */
+{label:'Bab 5',title:'Hujan di Halte',sub:'Payung biru, cerita Bandung',nodes:[
+  {bg:'hujan'},{stage:['F','T']},
+  [N,'Hari Jumat. Langit sudah mendung sejak istirahat. Waktu bel pulang berbunyi, hujan turun seperti ember yang dibalik.'],
+  [T,'Wah... aku lupa bawa payung.','b'],
+  [N,'Aku merogoh tas. Ada payung lipat kecil berwarna biru tua. Payung yang selalu kubawa, tapi baru kali ini kupakai dengan alasan lebih dari sekadar hujan.'],
+  {choice:{q:'Teppi menatap hujan di depan pintu kelas. Aku...',opts:[
+    {t:'Tawarkan jalan bareng sampai halte',d:6,f:'payung',then:[
+      [F,'Aku punya payung. Kecil sih. Mau jalan bareng sampai halte?','n'],
+      [T,'Tidak apa-apa? Nanti kamu kebasahan.','s'],
+      [F,'Hujannya paling ke sebelah kiri. Aku ikhlas.','m'],
+      [T,'Kamu aneh. Tapi baiklah.','h']
+    ]},
+    {t:'Kasih payungnya, aku lari saja',d:3,then:[
+      [F,'Nih payungnya. Aku bisa lari.','n'],
+      [T,'Jangan! Nanti kamu sakit!','o'],
+      [F,'Aku kuat. Imun anak yang telat tiap Senin itu baja.','m'],
+      [T,'Tidak. Kita pakai bareng. Titik.','n']
+    ]},
+    {t:'Bilang hujannya sebentar lagi reda',d:-3,then:[
+      [F,'Kayaknya hujannya sebentar kok. Tunggu saja di sini.','n'],
+      [T,'Oh... iya juga.','b'],
+      [N,'Aku pulang duluan dengan payung biru sendirian. Di belokan jalan, aku menoleh. Teppi masih berdiri di depan kelas, memandangi hujan dengan bahu turun. Aku langsung putar balik.'],
+      [F,'Teppi! Ayo! Aku salah, hujannya tidak reda-reda.','b'],
+      [T,'Kamu balik lagi?','o'],
+      [F,'Iya. Rasa bersalahku lebih deras daripada hujannya.','n']
+    ]}
+  ]}},
+  [N,'Kami duduk di halte kecil depan sekolah. Bunyi hujan di atap seng terdengar seperti tepuk tangan yang tidak selesai-selesai.'],
+  [T,'Kamu tahu, hujan di Bandung beda. Lebih dingin. Dan semua orang selalu punya jaket.','n'],
+  [F,'Kamu kangen Bandung?','n'],
+  [T,'Iya. Sedikit. Banyak sebenarnya. Aku pindah karena ibuku dipindahtugaskan. Aku meninggalkan teman-teman, sekolah, tempat nongkrong favoritku.','b'],
+  [T,'Dan di sini semuanya baru. Orang-orangnya baik, tapi aku masih merasa seperti tamu.','b'],
+  {choice:{q:'Aku menjawab...',opts:[
+    {t:'Dengarkan dulu, lalu bilang dia tidak sendirian',d:6,f:'peka',then:[
+      [N,'Aku tidak langsung menjawab. Kadang orang cuma ingin didengarkan, bukan diperbaiki.'],
+      [F,'Pasti berat. Meninggalkan semuanya. Kalau aku di posisimu, mungkin aku sudah mogok makan.','n'],
+      [F,'Tapi kamu tidak sendirian di sini. Ada aku, Raka, Nadia. Dan kursi sebelah jendela itu sekarang punya penghuni tetap.','h'],
+      [T,'...Makasih, Firjan. Kamu orang pertama yang bilang begitu tanpa terdengar seperti kutipan motivasi.','h']
+    ]},
+    {t:'Hibur dengan lelucon',d:3,then:[
+      [F,'Tenang. Bandung punya cilok, kita punya pecel.','m'],
+      [T,'Pecel itu enak sih, jujur.','h'],
+      [N,'Dia tersenyum, tapi matanya masih sedikit sendu. Lelucon bisa menyalakan lampu, tapi kadang bukan itu yang dicari.']
+    ]},
+    {t:'Bilang semua orang pernah jadi anak baru',d:-2,then:[
+      [F,'Semua orang pernah jadi anak baru kok. Nanti juga biasa.','n'],
+      [T,'Iya... betul juga.','n'],
+      [N,'Jawabanku benar, tapi dingin seperti kulkas. Dia mengangguk sopan, dan kami diam sampai hujan reda.']
+    ]}
+  ]}},
+  [N,'Hujan perlahan reda. Angkot jurusan rumah Teppi datang dari ujung jalan, lampunya menyala kuning di antara genangan.'],
+  {if:s=>s.love>=22?[
+    [T,'Besok aku bawa payung. Jadi kamu tidak perlu repot.','s'],
+    [F,'Oh... oke.','n'],
+    [T,'Tapi mungkin aku bawa dua. Satu buat kamu. Biar kita impas.','h'],
+    [F,'Aku tidak pernah impas dengan siapa pun.','m'],
+    [T,'Kalau begitu aku hutang terus. Selamanya.','l'],
+    [N,'Angkot itu pergi. Aku berdiri di halte sambil memegang payung biru yang basah dan tersenyum sendiri seperti orang aneh.']
+  ]:[
+    [T,'Terima kasih untuk payungnya, Firjan.','n'],
+    [F,'Sama-sama.','n'],
+    [N,'Angkot itu pergi. Aku berdiri di halte dan merasa ada kalimat yang seharusnya kuucapkan, tapi tidak tahu apa.']
+  ]}
+]},
+
+/* ---------- BAB 6 ---------- */
+{label:'Bab 6',title:'Minggu di Pasar Kaget',sub:'Cilok, es dawet, dan mesin foto',nodes:[
+  {bg:'kamar'},{stage:['F']},
+  [N,'Sabtu malam. Aku sedang berbaring di kasur dan menatap langit-langit ketika HP-ku bergetar.'],
+  {postit:'Firjan, besok pagi kamu kosong? Aku butuh referensi suasana pasar buat komikku, tapi belum hafal jalan di kota ini. Kamu bisa temani? Kalau tidak sibuk, ya.',from:'Pesan dari Teppi'},
+  {choice:{q:'Aku membalas...',opts:[
+    {t:'Langsung bilang mau, ajak ke Pasar Kaget',d:5,then:[
+      [N,'Jariku mengetik lebih cepat daripada otakku.'],
+      [F,'Besok jam enam pagi di halte depan sekolah. Kita ke Pasar Kaget. Bawa perut kosong.','h']
+    ]},
+    {t:'Bilang mau, tapi pura-pura santai',d:1,then:[
+      [F,'Boleh. Jam berapa? Kebetulan aku kosong. Banget.','n'],
+      [N,'Tiga kali aku menghapus kata “banget” sebelum akhirnya membiarkannya terkirim.']
+    ]},
+    {t:'Bilang “kayaknya ada acara”',d:-3,then:[
+      [N,'Aku mengetik “kayaknya aku ada acara”, lalu menatapnya lama. Acara apa? Acara rebahan?'],
+      [N,'Dua menit kemudian aku menghapusnya dan menggantinya.'],
+      [F,'Maaf, tadi kupikir ada acara. Ternyata tidak. Jam enam di halte sekolah ya.','b']
+    ]}
+  ]}},
+  {bg:'pasar'},{stage:['F','T']},
+  [N,'Minggu pagi di Pasar Kaget. Bau gorengan, bubur ayam, dan sabun dari lapak sebelah bercampur jadi satu. Lampu-lampu kecil masih menyala di atas tenda.'],
+  [T,'Wah, ramai banget! Di Bandung aku jarang ke pasar seperti ini.','o'],
+  [F,'Kamu harus coba cilok. Wajib. Kalau tidak suka, kita harus bicarakan lagi hubungan pertemanan ini.','m'],
+  {choice:{q:'Di depan lapak cilok...',opts:[
+    {t:'Tanya dulu Teppi suka rasa apa',d:5,f:'peka',then:[
+      [F,'Kamu biasanya suka apa? Manis, asin, atau pedas?','n'],
+      [T,'Aku suka manis. Tapi mau coba yang pedas juga.','s'],
+      [F,'Oke, kita mulai dari es dawet, lalu naik level ke cilok sedang.','h'],
+      [N,'Dia mengangguk serius, seperti baru diberi misi rahasia.']
+    ]},
+    {t:'Pesan cilok dan es dawet untuk dua orang',d:3,then:[
+      [N,'Dua porsi cilok pedas dan dua gelas es dawet. Keputusan cepat yang tidak sempat diragukan.'],
+      [T,'Kamu langsung beli? Aku bahkan belum bilang mau apa.','o'],
+      [F,'Wajib coba. Kalau kamu tidak suka, aku yang habiskan.','m'],
+      [T,'Hmm. Enak! Pedas, tapi enak!','h']
+    ]},
+    {t:'Pesan semua yang menurutku enak, tanpa tanya',d:1,then:[
+      [N,'Aku memesan tiga macam gorengan, satu bubur, dan satu es teh. Meja kecil kami hampir roboh.'],
+      [T,'Firjan, ini banyak banget.','o'],
+      [F,'Prinsip pasar: lebih baik kebanyakan daripada kekurangan.','m']
+    ]}
+  ]}},
+  [N,'Sambil makan, Teppi membuka buku sketsa dan menggambar. Pedagang cilok yang melipat plastik, ibu-ibu yang menawar jeruk, anak kecil yang menarik tali balon. Pensilnya bergerak cepat dan yakin.'],
+  [N,'Aku tidak banyak bicara. Aku cuma memegang es dawet dan memperhatikan. Rasanya seperti menonton sulap.'],
+  [T,'Kamu bengong.','m'],
+  [F,'Aku sedang menonton. Kamu menggambar seperti orang yang sedang menulis surat.','n'],
+  [T,'Hehe... itu kalimat yang bagus.','s'],
+  [N,'Di ujung pasar ada mesin foto stiker tua dengan tirai merah. Teppi berhenti di depannya, menatapnya sedikit terlalu lama.'],
+  [T,'Aku suka mengumpulkan foto stiker. Di Bandung aku punya satu album penuh. Di sini belum ada satu pun.','s'],
+  {choice:{q:'Mesin foto itu menunggu. Aku...',opts:[
+    {t:'Ajak masuk dan pasang pose paling konyol',d:4,f:'foto',then:[
+      [F,'Ayo masuk. Album barumu harus dimulai dari yang paling heboh.','h'],
+      [N,'Kami berdesakan di dalam bilik sempit. Foto pertama: serius banget. Foto kedua: aku menarik pipinya, dia menjewer hidungku. Foto ketiga: kami berdua tertawa terlalu keras sampai blur.'],
+      [T,'Foto ketiganya jelek banget. Aku suka.','l']
+    ]},
+    {t:'Ajak masuk dan berpose manis',d:3,f:'foto',then:[
+      [F,'Ayo, satu strip saja. Pose biasa.','n'],
+      [N,'Foto pertama sampai ketiga biasa saja. Foto keempat: kami berdua menoleh ke arah yang sama, tersenyum tanpa sengaja. Lampu blitz menangkapnya persis.'],
+      [T,'Yang keempat itu... bagus.','s']
+    ]},
+    {t:'Bilang malas, takut malu',d:-2,then:[
+      [F,'Nggak ah. Itu mesin untuk anak-anak.','n'],
+      [T,'Oh... iya sih.','b'],
+      [N,'Dia berjalan menjauh dari mesin itu, tapi sempat menoleh sekali. Aku langsung menyesal.']
+    ]}
+  ]}},
+  {if:s=>s.flags.foto?[
+    [N,'Dua strip foto keluar dari mesin. Dia memberiku satu, dan menyimpan satu untuk dirinya.'],
+    [T,'Satu buat kamu, satu buat aku. Jangan hilang ya.','s'],
+    [F,'Siap. Akan kujaga seperti pulpen keramat.','m'],
+    [T,'Kalau nanti ada foto lagi, mau?','s'],
+    {choice:{q:'Dia menunggu jawabanku.',opts:[
+      {t:'Janji foto lagi saat festival sekolah',d:4,f:'janji',then:[
+        [F,'Festival sekolah bulan depan. Janji, kita foto lagi di sana.','h'],
+        [T,'Janji ya? Aku catat.','h'],
+        [F,'Catat di mana?','m'],
+        [T,'Di sini.','s'],
+        [N,'Dia menunjuk dadanya sendiri, lalu langsung memalingkan wajah, malu.']
+      ]},
+      {t:'“Lihat nanti saja”',d:0,then:[
+        [F,'Lihat nanti saja. Siapa tahu ada mesin lain.','n'],
+        [T,'Boleh.','n']
+      ]}
+    ]}}
+  ]:[
+    [T,'Tidak apa-apa. Mungkin lain kali.','n'],
+    [N,'Aku mengangguk. Tapi dalam hati aku berjanji: lain kali, aku yang tidak akan menolak.']
+  ]},
+  [T,'Terima kasih sudah menemaniku. Hari ini... aku mulai merasa betah di sini.','s'],
+  [N,'Aku tidak tahu harus bilang apa. Jadi aku cuma mengangguk, dan itu ternyata cukup.']
+]},
+
+/* ---------- BAB 7 ---------- */
+{label:'Bab 7',title:'Kafe Jendela',sub:'Festival sekolah dan salah paham',nodes:[
+  {bg:'kelas'},{stage:['F','T']},
+  [N,'Festival sekolah tinggal tiga hari. Kelas 11-B memutuskan membuka kafe kecil bernama Kafe Jendela. Nama itu ide Nadia, dengan alasan “biar estetik”.'],
+  [D,'Oke, pembagian tugas! Raka jadi barista. Firjan kasir. Teppi dekorasi, karena dia satu-satunya yang punya bakat seni di kelas ini.','h'],
+  [R,'Gue barista? Gue bahkan tidak bisa bikin mi instan tanpa gosong.','o'],
+  [D,'Makanya kita beli kopi sachet.','n'],
+  [T,'Aku... boleh bikin dekorasinya? Beneran?','s'],
+  [D,'Tentu saja. Kamu yang gambar komik, kan? Kita mau tembok kafe kita penuh panel komik.','h'],
+  [N,'Mata Teppi berbinar. Aku jarang melihatnya seantusias itu.'],
+  [N,'Hari-hari persiapan jadi kacau dengan cara yang paling menyenangkan. Raka menumpahkan cat biru ke seragamnya sendiri. Nadia membuat jadwal piket yang tidak ada yang mengikuti. Dan Teppi melukis tembok kelas dengan komik empat panel berukuran raksasa.'],
+  [N,'Aku ikut memegang kuas. Tugasku: mengecat langit biru di panel kedua. Hasilnya agak belang.'],
+  [T,'Langitnya... punya karakter.','m'],
+  [F,'Itu gaya impresionis. Namanya Langit Belang.','h'],
+  [T,'Hehe.','l'],
+  [N,'Sore itu aku turun ke ruang OSIS untuk mengambil lem. Waktu kembali, aku berhenti di depan pintu kelas, karena mendengar suara Nadia dan Teppi dari dalam.'],
+  {stage:['F']},
+  [D,'Jadi kamu beneran mau pergi? Bulan Desember?','o'],
+  [T,'Belum pasti. Tapi aku belum bilang ke Firjan. Aku tidak tahu cara bilangnya.','b'],
+  [D,'Dia pasti sedih.','b'],
+  [T,'Itu yang bikin aku bingung...','b'],
+  [N,'Pergi? Desember? Lem di tanganku hampir jatuh. Pikiranku langsung menyusun ratusan skenario, dan semuanya berakhir dengan kursi kosong di sebelah jendela.'],
+  {choice:{q:'Apa yang harus kulakukan?',opts:[
+    {t:'Tenang. Tanya langsung ke Teppi, nanti',d:5,f:'jujur',then:[
+      [N,'Aku menarik napas dalam-dalam. Jangan menyimpulkan dulu. Dengarkan dulu dari orangnya.'],
+      [N,'Aku masuk seperti biasa, meletakkan lem di meja, dan melanjutkan mengecat langit yang belang. Tapi aku berjanji pada diri sendiri: sebelum acara selesai, aku akan bertanya.']
+    ]},
+    {t:'Tanya Nadia dulu',d:1,then:[
+      [N,'Aku mencegat Nadia di koridor sepuluh menit kemudian.'],
+      [F,'Nad, tadi aku dengar sedikit. Teppi mau pergi?','b'],
+      [D,'Ya ampun, kamu dengar? Firjan, kamu harus dengar dari Teppi sendiri. Janji, ini tidak seburuk yang kamu pikir.','b'],
+      [F,'Tapi dia mau pergi?','n'],
+      [D,'Tanya dia langsung. Titik.','n']
+    ]},
+    {t:'Menjauh dan bersikap dingin',d:-7,then:[
+      [N,'Aku masuk kelas, meletakkan lem, dan tidak mengatakan apa-apa. Selama sisa sore itu, aku mengecat dalam diam.'],
+      [T,'Firjan, kamu baik-baik saja?','s'],
+      [F,'Baik.','n'],
+      [T,'Kamu kelihatan... beda hari ini.','b'],
+      [F,'Tidak apa-apa. Cuma capek.','n'],
+      [R,'Bro, lo ngomong kayak robot. Ada apa?','o'],
+      [N,'Teppi menunduk dan kembali menggambar. Satu garis meleset dari panel. Dia menghapusnya pelan-pelan.'],
+      [N,'Aku tahu aku bersikap bodoh. Tapi aku belum tahu cara berhenti.']
+    ]}
+  ]}},
+  {bg:'festival'},{stage:['F','T']},
+  [N,'Hari festival. Lampion digantung di sepanjang halaman sekolah, dan bau jagung bakar bercampur dengan musik dari panggung kecil.'],
+  [N,'Kafe Jendela laris. Raka sukses membuat kopi yang rasanya... eksperimental. Nadia menjualnya dengan kalimat “rasa baru, jangan tanya”.'],
+  [T,'Firjan, tembok kita jadi tempat foto terbaik di festival! Lihat antreannya!','h'],
+  [F,'Antre foto di depan komik buatanmu. Teppi, kamu jadi seleb.','l'],
+  {if:s=>s.flags.janji?[
+    [T,'Eh, janji kamu. Foto stiker lagi?','s'],
+    [F,'Janji adalah janji.','h'],
+    [N,'Ada booth foto stiker di sudut halaman. Kami berdesakan di dalamnya dengan Raka mengintip dari tirai dan Nadia berteriak “senyum!”'],
+    [N,'Foto pertama: pose seram. Foto kedua: aku pura-pura mau menggigit hidung Teppi. Foto ketiga: dia tertawa, aku menunduk. Foto keempat: kami berdua menatap kamera dengan wajah yang terlalu jujur.'],
+    [T,'Yang terakhir itu... jangan dilihat dulu.','s']
+  ]:[
+    [N,'Aku tersenyum, tapi hatiku masih menyimpan pertanyaan soal kata “pergi” itu. Rasanya seperti ada batu kecil di dalam sepatu.']
+  ]},
+  [T,'Firjan, setelah acara selesai, bisa kita bicara? Di atap sekolah. Ada yang mau kukatakan.','s'],
+  [F,'Boleh.','n'],
+  [N,'Aku tidak tahu apa yang akan dia katakan. Tapi untuk pertama kalinya, aku tidak tahu apakah aku harus takut atau berharap.']
+]},
+
+/* ---------- BAB 8 ---------- */
+{label:'Bab 8',title:'Atap Sekolah',sub:'Satu pertanyaan, dua jawaban',nodes:[
+  {bg:'atap'},{stage:['F','T']},
+  [N,'Tangga menuju atap berderit di setiap anak tangga. Pintu besinya tidak pernah dikunci, entah kenapa, tapi hanya sedikit murid yang tahu.'],
+  [N,'Dari sini seluruh kota terlihat kecil. Langit berwarna jingga dan ungu, seperti cat air yang tumpah.'],
+  [T,'Bagus, ya?','n'],
+  [F,'Bagus. Aku baru tahu tempat ini.','n'],
+  [T,'Aku menemukannya di minggu pertama. Waktu belum punya teman. Aku sering ke sini untuk menggambar.','b'],
+  [T,'Sebelum mulai, aku mau minta maaf dulu.','s'],
+  [F,'Maaf soal apa?','o'],
+  [T,'Aku tahu kamu mendengar obrolanku dengan Nadia. Nadia yang bilang.','s'],
+  [F,'Aku... iya. Aku dengar kata “pergi” dan “Desember”.','b'],
+  [T,'Itu soal workshop komik. Dua minggu di Bandung, bulan Desember. Aku lolos seleksi. Aku daftar diam-diam waktu baru pindah kemari.','s'],
+  [F,'Dua minggu? Jadi kamu bukan pindah lagi?','o'],
+  [T,'Pindah? Aku baru betah di sini! Kenapa aku mau pindah?!','o'],
+  [F,'Aku dengar “pergi”. Otakku langsung bikin cerita sendiri.','b'],
+  [T,'Kamu itu sutradara drama tanpa naskah.','m'],
+  [F,'Dan kamu penulis yang tidak kasih spoiler.','m'],
+  [N,'Kami berdua tertawa. Tawa lega yang membuat bahu yang tegang akhirnya turun.'],
+  [T,'Aku tidak cerita karena takut. Takut kamu bilang “ya sudah, pergi saja”. Atau lebih parah: tidak peduli.','b'],
+  [F,'Aku peduli.','n'],
+  [T,'Beneran?','s'],
+  [N,'Sunyi sebentar. Angin dari arah kota menggoyangkan rambutnya. Aku menarik napas dalam-dalam.'],
+  {choice:{q:'Saatnya jujur. Aku bilang...',opts:[
+    {t:'“Aku suka kamu, Teppi.”',d:8,f:'berani',then:[
+      [F,'Teppi, sebenarnya aku bukan cuma peduli. Aku suka sama kamu. Mungkin dari hari kamu bilang suka teh manis di depan kelas.','s'],
+      [T,'Dari... hari pertama?','o'],
+      [F,'Mungkin dari tos canggung di gerbang. Aku belum bisa memastikan.','n'],
+      {if:s=>s.love>=52?[
+        [T,'Kamu tahu... aku juga.','s'],
+        [T,'Aku juga suka kamu, Firjan. Dari hujan di halte. Atau mungkin dari pulpen keramat itu.','h'],
+        [F,'Pulpen keramat berjasa besar.','l'],
+        [N,'Dia tersenyum, dan aku bersumpah itu senyum terindah yang pernah kulihat. Padahal aku sudah melihat banyak senyum Teppi sekarang.']
+      ]:s.love>=28?[
+        [T,'Firjan... aku kaget. Dan senang. Tapi aku butuh waktu. Semuanya masih baru buatku.','s'],
+        [F,'Tidak apa-apa. Aku bisa menunggu.','n'],
+        [T,'Terima kasih sudah jujur.','h']
+      ]:[
+        [T,'Firjan... terima kasih. Tapi aku belum bisa. Kita masih baru banget saling kenal.','b'],
+        [F,'Oh. Iya. Aku paham.','b'],
+        [N,'Dadaku terasa kosong sedikit. Tapi aku lega sudah jujur.']
+      ]}
+    ]},
+    {t:'“Aku akan menunggu. Dan ada hal lain yang ingin kukatakan nanti.”',d:6,f:'menunggu',then:[
+      [F,'Aku peduli banget. Dua minggu itu pasti terasa lama buatku. Tapi aku mau menunggu. Dan nanti, kalau kamu pulang, ada hal lain yang ingin kukatakan.','s'],
+      {if:s=>s.love>=52?[
+        [T,'Hal lain itu... mungkin aku sudah tahu.','s'],
+        [T,'Nanti pas pulang, aku jawab. Janji.','h'],
+        [F,'Jawab apa? Aku kan belum bertanya.','o'],
+        [T,'Pokoknya tunggu saja.','m']
+      ]:s.love>=28?[
+        [T,'Aku akan menunggu hal itu. Dan terima kasih sudah mau menunggu.','s'],
+        [N,'Dia tidak menjawab dengan jelas. Tapi dia tersenyum, dan itu cukup untuk sekarang.']
+      ]:[
+        [T,'Terima kasih, Firjan. Kamu teman yang baik.','n'],
+        [N,'Teman yang baik. Dua kata yang manis sekaligus pahit.']
+      ]}
+    ]},
+    {t:'“Selamat ya. Kamu pasti hebat di sana.”',d:0,f:'aman',then:[
+      [F,'Selamat ya. Kamu pasti hebat di sana.','h'],
+      [T,'Terima kasih... itu saja?','s'],
+      [F,'Itu saja. Eh, tidak. Aku bangga sama kamu.','n'],
+      {if:s=>s.love>=28?[
+        [T,'Terima kasih. Aku senang kamu bangga.','h'],
+        [N,'Mungkin bukan jawaban yang kutahu bisa kuberikan. Tapi dia tersenyum, dan aku menerimanya.']
+      ]:[
+        [T,'Oh. Iya. Terima kasih.','n'],
+        [N,'Percakapan berakhir dengan sopan. Terlalu sopan.']
+      ]}
+    ]}
+  ]}},
+  [N,'Langit mulai gelap. Dari bawah terdengar suara Nadia memanggil: “Firjan! Teppi! Kafe kebanjiran pelanggan!”'],
+  [T,'Kita dipanggil.','n'],
+  [F,'Ayo turun. Sebelum Raka merusak kopi semua orang.','m'],
+  [N,'Kami menuruni tangga berderit itu bersama-sama.']
+]},
+
+/* ---------- EPILOG ---------- */
+{label:'Epilog',title:'Dua Minggu Kemudian',sub:'Desember',nodes:[
+  {if:s=>{const k=endingKey(s);return k==='S'?ES:k==='A'?EA:k==='B'?EB:EC;}}
+]}
+
+];
+</script>
+
+<script id="engine">
+(function(){
+  'use strict';
+  var $=function(s){return document.querySelector(s);};
+  var app=$('#app'),bgEl=$('#bg'),rainEl=$('#rain'),slotL=$('#slotL'),slotC=$('#slotC'),slotR=$('#slotR');
+  var chip=$('#chip'),barFill=$('#barFill'),toastEl=$('#toast'),dialogWrap=$('#dialogWrap'),nameTag=$('#nameTag'),textEl=$('#text'),nextInd=$('#nextInd');
+  var choiceLayer=$('#choiceLayer'),postitLayer=$('#postitLayer'),cardEl=$('#card'),logEl=$('#log'),titleEl=$('#title'),endEl=$('#endScreen');
+  var KEY='kursi-jendela-save-v1',EKEY='kursi-jendela-endings-v1';
+
+  /* ===== penyimpanan ringan (boleh gagal) ===== */
+  function put(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+  function get(k){try{var x=localStorage.getItem(k);return x?JSON.parse(x):null;}catch(e){return null;}}
+
+  /* ===== tokoh ===== */
+  var CH={
+    F:{name:'Firjan',tag:'#9BE3D3',skin:'#E5B58C',hair:'#1B1B24',shirt:'#F3F5F9',style:'spiky'},
+    T:{name:'Teppi',tag:'#FFD84D',skin:'#F6D4B8',hair:'#241A1E',shirt:'#F3F5F9',style:'bob'},
+    R:{name:'Raka',tag:'#FFB4A2',skin:'#D49E6C',hair:'#3A2616',shirt:'#E9EEF5',style:'raka'},
+    D:{name:'Nadia',tag:'#B7E4A8',skin:'#F2CBA6',hair:'#A9C2B5',brow:'#3B2E2A',shirt:'#F3F5F9',style:'hijab'},
+    B:{name:'Bu Sari',tag:'#F4B6B6',skin:'#E0B088',hair:'#2B2B2B',shirt:'#7A2E3C',style:'bun'},
+    S:{name:'Pak Joko',tag:'#C9D4E5',skin:'#C99870',hair:'#2A2A2A',shirt:'#3F5A7A',cap:'#2E4A6B',style:'cap'},
+    K:{name:'Bu Eni',tag:'#FFC6A0',skin:'#E0AE86',hair:'#D88A8A',brow:'#3B2E2A',shirt:'#E9D6C4',style:'hijab'}
+  };
+  var INK='#1D1A24',MOUTH='#7A2A33';
+
+  function browPaths(m){
+    var n=['M70 107Q80 102 90 106','M110 106Q120 102 130 107'];
+    if(m==='o'||m==='h'||m==='l') return ['M70 100Q80 95 90 99','M110 99Q120 95 130 100'];
+    if(m==='b') return ['M68 111L90 102','M110 102L132 111'];
+    if(m==='m') return ['M70 100Q80 94 90 99','M110 106Q120 102 130 107'];
+    return n;
+  }
+  function eyesFor(m){
+    var dots=function(rx,ry,dy){
+      return '<ellipse cx="80" cy="'+(122+dy)+'" rx="'+rx+'" ry="'+ry+'" fill="'+INK+'"/><ellipse cx="120" cy="'+(122+dy)+'" rx="'+rx+'" ry="'+ry+'" fill="'+INK+'"/>'+
+             '<circle cx="82" cy="'+(119+dy)+'" r="1.8" fill="#fff"/><circle cx="122" cy="'+(119+dy)+'" r="1.8" fill="#fff"/>';
+    };
+    if(m==='h'||m==='l') return '<path d="M71 125Q80 112 89 125M111 125Q120 112 129 125" fill="none" stroke="'+INK+'" stroke-width="4" stroke-linecap="round"/>';
+    if(m==='z') return '<path d="M71 124H89M111 124H129" stroke="'+INK+'" stroke-width="3.5" stroke-linecap="round"/>';
+    if(m==='o') return '<ellipse cx="80" cy="122" rx="7" ry="9" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/><ellipse cx="120" cy="122" rx="7" ry="9" fill="#fff" stroke="'+INK+'" stroke-width="2.5"/><circle cx="80" cy="123" r="3.2" fill="'+INK+'"/><circle cx="120" cy="123" r="3.2" fill="'+INK+'"/>';
+    if(m==='s') return dots(4.5,6,2);
+    if(m==='b') return dots(5,6.5,2);
+    return dots(5,6.5,0);
+  }
+  function mouthFor(m){
+    var st='fill="none" stroke="'+MOUTH+'" stroke-width="3" stroke-linecap="round"';
+    if(m==='h') return '<path d="M88 147Q100 168 112 147Z" fill="'+MOUTH+'"/>';
+    if(m==='l') return '<path d="M84 145Q100 176 116 145Z" fill="'+MOUTH+'"/>';
+    if(m==='s') return '<path d="M92 154Q96 150 100 154Q104 158 108 154" '+st+'/>';
+    if(m==='o') return '<ellipse cx="100" cy="156" rx="5.5" ry="7" fill="'+MOUTH+'"/>';
+    if(m==='b') return '<path d="M91 159Q100 150 109 159" '+st+'/>';
+    if(m==='m') return '<path d="M91 155Q104 160 113 148" '+st+'/>';
+    if(m==='z') return '<path d="M94 154Q100 157 106 154" '+st+'/>';
+    return '<path d="M92 152Q100 158 108 152" '+st+'/>';
+  }
+  function sprite(code,mood){
+    var c=CH[code];mood=mood||'n';
+    var br=c.brow||c.hair,s='';
+    var back='',mid='',front='';
+    var hijab=c.style==='hijab';
+    if(c.style==='bob') back='<path d="M42 122C36 60 68 34 100 34C134 34 164 60 158 122L162 176C152 184 142 172 140 150L60 150C58 172 48 184 38 176Z" fill="'+c.hair+'"/>';
+    if(c.style==='bun') back='<circle cx="100" cy="38" r="20" fill="'+c.hair+'"/>';
+    if(hijab) mid='<path d="M36 132C26 60 68 26 100 26C134 26 176 60 164 132C170 180 154 206 132 212L68 212C46 206 30 180 36 132Z" fill="'+c.hair+'"/>';
+    if(c.style==='spiky') front='<path d="M50 112C42 70 70 40 100 40C132 40 160 68 150 112C142 92 128 82 110 84C100 92 82 86 72 82C60 88 52 100 50 112Z" fill="'+c.hair+'"/><path d="M64 62L58 40L80 52ZM96 46L100 26L116 46ZM122 50L140 34L142 60Z" fill="'+c.hair+'"/>';
+    if(c.style==='bob') front='<path d="M50 110C58 72 86 62 100 62C124 62 148 76 152 110C138 92 120 86 100 88C80 88 62 94 50 110Z" fill="'+c.hair+'"/><rect x="124" y="74" width="22" height="8" rx="3" fill="#FFD84D" transform="rotate(-18 135 78)"/>';
+    if(c.style==='raka') front='<path d="M50 108C44 74 58 52 74 56L80 38L94 52L106 34L118 52L134 42L138 60C152 68 154 92 150 108C140 88 120 82 100 82C80 82 62 88 50 108Z" fill="'+c.hair+'"/>';
+    if(c.style==='bun') front='<path d="M50 112C48 70 78 52 100 52C124 52 152 70 150 112C138 86 120 80 100 80C80 80 62 86 50 112Z" fill="'+c.hair+'"/>';
+    if(c.style==='cap') front='<path d="M48 94C50 54 76 40 100 40C126 40 150 54 152 94Z" fill="'+c.cap+'"/><rect x="42" y="88" width="116" height="11" rx="5" fill="#243B57"/>';
+
+    var body='<path d="M18 282C18 218 54 196 100 196C146 196 182 218 182 282Z" fill="'+c.shirt+'"/><path d="M76 198L100 226L124 198" fill="none" stroke="#C9D0DE" stroke-width="3"/>';
+    if(code==='T') body+='<path d="M86 216L100 224L114 216L100 208Z" fill="#14213D"/>';
+    if(code==='F') body+='<circle cx="140" cy="244" r="8" fill="#E04B4B"/><circle cx="140" cy="244" r="3.5" fill="#fff"/>';
+    if(code==='R') body+='<path d="M84 198L100 282L116 198Z" fill="#23283A"/>';
+    if(code==='B') body+='<circle cx="60" cy="250" r="5" fill="#E8C268"/><circle cx="80" cy="262" r="4" fill="#E8C268"/><circle cx="130" cy="256" r="5" fill="#E8C268"/><circle cx="150" cy="240" r="4" fill="#E8C268"/>';
+    if(code==='S') body+='<rect x="128" y="236" width="22" height="9" fill="#F2C94C"/>';
+    if(code==='K') body+='<path d="M30 282C30 230 62 210 100 210C138 210 170 230 170 282Z" fill="'+c.hair+'" opacity=".55"/>';
+    var neck=hijab?'':'<rect x="86" y="170" width="28" height="36" rx="10" fill="'+c.skin+'"/>';
+    var head=hijab?'<ellipse cx="100" cy="124" rx="42" ry="48" fill="'+c.skin+'"/>':'<ellipse cx="100" cy="120" rx="50" ry="56" fill="'+c.skin+'"/>';
+    var frame=hijab?'<ellipse cx="100" cy="124" rx="44" ry="50" fill="none" stroke="'+c.hair+'" stroke-width="12"/>':'';
+    var brows=browPaths(mood);
+    var blush=mood==='s'?0.8:(mood==='h'||mood==='l')?0.5:0.24;
+    var face='<g fill="none" stroke="'+br+'" stroke-width="4" stroke-linecap="round"><path d="'+brows[0]+'"/><path d="'+brows[1]+'"/></g>'+eyesFor(mood)+mouthFor(mood)+
+      '<ellipse cx="66" cy="140" rx="10" ry="5.5" fill="#FF7A90" opacity="'+blush+'"/><ellipse cx="134" cy="140" rx="10" ry="5.5" fill="#FF7A90" opacity="'+blush+'"/>';
+    if(code==='B') face+='<g fill="none" stroke="#5A4A3A" stroke-width="3"><circle cx="80" cy="122" r="15"/><circle cx="120" cy="122" r="15"/><path d="M95 120H105"/></g>';
+    if(code==='S') face+='<path d="M86 146Q100 139 114 146Q108 152 100 148Q92 152 86 146Z" fill="#2A2A2A"/>';
+    s='<svg viewBox="0 0 200 282" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+c.name+'">'+back+body+neck+mid+head+frame+front+face+'</svg>';
+    return s;
+  }
+
+  /* ===== latar adegan ===== */
+  function win(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="#BFE3F5" stroke="#8A97A8" stroke-width="10"/><path d="M'+(x+w/2)+' '+y+'V'+(y+h)+'M'+x+' '+(y+h/2)+'H'+(x+w)+'" stroke="#8A97A8" stroke-width="6"/>';}
+  function sceneSVG(n){
+    var h='<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">',i,x,y,s='';
+    if(n==='gerbang'){
+      h+='<defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FCBE8"/><stop offset="1" stop-color="#F5E0B9"/></linearGradient></defs><rect width="1600" height="900" fill="url(#a)"/><circle cx="1260" cy="200" r="92" fill="#FFF1B8" opacity=".9"/>';
+      h+='<rect x="260" y="300" width="1080" height="380" fill="#D7E1EA"/><rect x="240" y="280" width="1120" height="30" fill="#7E8EA3"/>';
+      for(i=0;i<8;i++){h+='<rect x="'+(320+i*125)+'" y="360" width="80" height="110" fill="#A9C9DE" stroke="#8A97A8" stroke-width="5"/><rect x="'+(320+i*125)+'" y="520" width="80" height="110" fill="#A9C9DE" stroke="#8A97A8" stroke-width="5"/>';}
+      h+='<rect x="0" y="700" width="1600" height="200" fill="#8E9AA5"/><circle cx="110" cy="480" r="150" fill="#4E9A6B"/><circle cx="1500" cy="500" r="170" fill="#448C60"/><rect x="100" y="560" width="22" height="160" fill="#5B4636"/><rect x="1490" y="580" width="24" height="140" fill="#5B4636"/>';
+      for(i=0;i<27;i++){h+='<rect x="'+(i*60+20)+'" y="470" width="10" height="300" fill="#1F3B4D"/>';}
+      h+='<rect y="450" width="1600" height="18" fill="#1F3B4D"/><rect y="740" width="1600" height="18" fill="#1F3B4D"/>';
+    } else if(n==='kelas'){
+      h+='<defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DCE9EF"/><stop offset="1" stop-color="#C3D6DF"/></linearGradient><linearGradient id="r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF3C4" stop-opacity=".75"/><stop offset="1" stop-color="#FFF3C4" stop-opacity="0"/></linearGradient></defs><rect width="1600" height="900" fill="url(#a)"/>';
+      h+='<rect y="620" width="1600" height="280" fill="#B58F6A"/><rect y="610" width="1600" height="14" fill="#8F6D4D"/>';
+      h+='<rect x="330" y="150" width="640" height="300" rx="8" fill="#F8FAFC" stroke="#8A97A8" stroke-width="10"/><path d="M380 215H760M380 265H900M380 315H680" stroke="#7EA6D8" stroke-width="8" stroke-linecap="round" opacity=".7"/>';
+      h+=win(1070,110,200,330)+win(1320,110,200,330);
+      h+='<path d="M1070 110L640 720L980 720L1270 110Z" fill="url(#r)"/><path d="M1320 110L960 720L1240 720L1520 110Z" fill="url(#r)" opacity=".6"/>';
+      for(i=0;i<3;i++){x=80+i*520;h+='<rect x="'+x+'" y="700" width="380" height="30" rx="6" fill="#6B8590"/><rect x="'+(x+30)+'" y="730" width="14" height="170" fill="#55707A"/><rect x="'+(x+336)+'" y="730" width="14" height="170" fill="#55707A"/>';}
+    } else if(n==='kantin'){
+      h+='<defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4B866"/><stop offset="1" stop-color="#E48C4A"/></linearGradient></defs><rect width="1600" height="900" fill="url(#a)"/>';
+      h+='<rect x="0" y="560" width="1600" height="340" fill="#D6AE86"/><rect x="120" y="360" width="1000" height="200" fill="#7A4B2C"/><rect x="100" y="340" width="1040" height="34" rx="6" fill="#A66A3E"/>';
+      h+='<rect x="620" y="110" width="440" height="190" rx="6" fill="#2B2B2B"/><path d="M660 160H900M660 210H960M660 255H820" stroke="#F2EFE6" stroke-width="8" stroke-linecap="round" opacity=".8"/>';
+      for(i=0;i<4;i++){x=220+i*280;h+='<path d="M'+x+' 0V120" stroke="#5A3A24" stroke-width="5"/><circle cx="'+x+'" cy="140" r="34" fill="#FFE08A"/><circle cx="'+x+'" cy="140" r="90" fill="#FFE08A" opacity=".15"/>';}
+      for(i=0;i<3;i++){x=160+i*480;h+='<rect x="'+x+'" y="700" width="360" height="34" rx="6" fill="#B9784A"/><rect x="'+(x+40)+'" y="734" width="14" height="166" fill="#8B5A36"/><rect x="'+(x+306)+'" y="734" width="14" height="166" fill="#8B5A36"/>';}
+    } else if(n==='perpus'){
+      h+='<rect width="1600" height="900" fill="#2E4A52"/><rect y="700" width="1600" height="200" fill="#1A2B30"/>';
+      var cols=['#E26D5C','#F2C14E','#5DA9A0','#8E7DBE','#F4F1DE','#6FA8DC','#D96C9F','#9BC53D'];
+      for(i=0;i<4;i++){x=60+i*390;h+='<rect x="'+x+'" y="110" width="340" height="580" fill="#1E3238" stroke="#12222A" stroke-width="8"/>';
+        for(var r=0;r<4;r++){y=150+r*134;var cx=x+14,k=0;while(cx<x+318){var bw=14+((k*7+r*5+i*3)%4)*6,bh=70+((k*11+r*3)%5)*10;h+='<rect x="'+cx+'" y="'+(y+110-bh)+'" width="'+bw+'" height="'+bh+'" fill="'+cols[(k+r+i)%8]+'" opacity=".9"/>';cx+=bw+2;k++;}
+          h+='<rect x="'+(x+6)+'" y="'+(y+110)+'" width="328" height="10" fill="#0E1C20"/>';}}
+      h+='<circle cx="800" cy="300" r="260" fill="#FFD67A" opacity=".13"/><rect x="0" y="780" width="1600" height="120" fill="#8B5E3C"/><rect x="0" y="770" width="1600" height="14" fill="#A57448"/>';
+    } else if(n==='lapangan'){
+      h+='<defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8CCBF0"/><stop offset="1" stop-color="#E4F3FA"/></linearGradient></defs><rect width="1600" height="900" fill="url(#a)"/>';
+      h+='<rect x="140" y="330" width="900" height="210" fill="#D3DCE5"/><rect x="120" y="310" width="940" height="26" fill="#6D7C8C"/>';
+      for(i=0;i<7;i++){h+='<rect x="'+(190+i*120)+'" y="380" width="70" height="100" fill="#A9C9DE" stroke="#8A97A8" stroke-width="4"/>';}
+      h+='<circle cx="1180" cy="440" r="130" fill="#4E9A6B"/><rect x="0" y="540" width="1600" height="360" fill="#4E8F72"/><rect x="170" y="590" width="1260" height="270" fill="none" stroke="#fff" stroke-width="8" opacity=".85"/><circle cx="800" cy="725" r="70" fill="none" stroke="#fff" stroke-width="8" opacity=".85"/><path d="M800 590V860" stroke="#fff" stroke-width="8" opacity=".85"/>';
+      h+='<rect x="1380" y="250" width="16" height="360" fill="#46535F"/><rect x="1300" y="220" width="100" height="76" fill="#fff" stroke="#46535F" stroke-width="6"/><ellipse cx="1310" cy="318" rx="30" ry="8" fill="none" stroke="#E55A3C" stroke-width="6"/>';
+    } else if(n==='hujan'){
+      h+='<defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#586C85"/><stop offset="1" stop-color="#2B3A4C"/></linearGradient></defs><rect width="1600" height="900" fill="url(#a)"/>';
+      for(i=0;i<9;i++){h+='<rect x="'+(i*190-20)+'" y="'+(260+(i*53)%140)+'" width="150" height="500" fill="#33445A" opacity=".8"/>';}
+      h+='<circle cx="300" cy="330" r="170" fill="#FFDC8C" opacity=".2"/><rect x="290" y="340" width="14" height="420" fill="#1D2A3A"/><circle cx="297" cy="338" r="16" fill="#FFE9B0"/>';
+      h+='<rect y="740" width="1600" height="160" fill="#202C3B"/><path d="M0 800H1600M0 850H1600" stroke="#3A4B63" stroke-width="3" opacity=".6"/>';
+      h+='<rect x="600" y="330" width="560" height="26" fill="#18232F"/><rect x="620" y="356" width="14" height="390" fill="#18232F"/><rect x="1126" y="356" width="14" height="390" fill="#18232F"/><rect x="640" y="640" width="480" height="20" fill="#4A3B30"/><rect x="660" y="660" width="12" height="80" fill="#2E241D"/><rect x="1090" y="660" width="12" height="80" fill="#2E241D"/>';
+    } else if(n==='pasar'){
+      h+='<defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4B3A7A"/><stop offset=".55" stop-color="#E58A6A"/><stop offset="1" stop-color="#F6C98A"/></linearGradient></defs><rect width="1600" height="900" fill="url(#a)"/>';
+      h+='<rect y="760" width="1600" height="140" fill="#3B2D44"/>';
+      for(i=0;i<4;i++){x=40+i*390;for(var q=0;q<8;q++){h+='<path d="M'+(x+q*42)+' 360L'+(x+q*42+42)+' 360L'+(x+q*42+50)+' 440L'+(x+q*42+8)+' 440Z" fill="'+(q%2?'#FFF4EA':'#E5484D')+'"/>';}
+        h+='<rect x="'+(x+10)+'" y="440" width="320" height="320" fill="#6F4A32"/><rect x="'+(x+30)+'" y="560" width="280" height="30" fill="#8A5E40"/>';}
+      h+='<path d="M0 260Q400 340 800 260T1600 260" fill="none" stroke="#2B2140" stroke-width="3"/>';
+      for(i=0;i<22;i++){x=i*74;y=260+Math.sin(i*0.6)*40+30;h+='<circle cx="'+x+'" cy="'+y+'" r="9" fill="#FFE08A"/><circle cx="'+x+'" cy="'+y+'" r="26" fill="#FFE08A" opacity=".2"/>';}
+      for(i=0;i<9;i++){x=100+i*170;h+='<circle cx="'+x+'" cy="'+(690-(i%3)*10)+'" r="26" fill="#2B2140" opacity=".78"/><rect x="'+(x-34)+'" y="'+(714-(i%3)*10)+'" width="68" height="120" rx="30" fill="#2B2140" opacity=".78"/>';}
+    } else if(n==='festival'){
+      h+='<defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#232B5C"/><stop offset=".6" stop-color="#D96C73"/><stop offset="1" stop-color="#F7B267"/></linearGradient></defs><rect width="1600" height="900" fill="url(#a)"/>';
+      h+='<rect x="200" y="330" width="1200" height="400" fill="#2A3157" opacity=".95"/>';
+      for(i=0;i<9;i++){h+='<rect x="'+(250+i*130)+'" y="390" width="80" height="110" fill="#FFD27A" opacity="'+(i%3?.85:.35)+'"/>';}
+      h+='<rect y="740" width="1600" height="160" fill="#262C45"/><path d="M0 160Q400 260 800 160T1600 160" fill="none" stroke="#14172F" stroke-width="3"/>';
+      var bc=['#FF6B5E','#FFD84D','#9BE3D3','#FFB4C6','#C9B8FF'];
+      for(i=0;i<26;i++){x=i*64;y=160+Math.sin(i*0.4+1)*34+16;h+='<path d="M'+x+' '+y+'l36 0l-18 44Z" fill="'+bc[i%5]+'"/>';}
+      for(i=0;i<7;i++){x=130+i*230;y=420+(i%3)*50;h+='<path d="M'+x+' 220V'+y+'" stroke="#14172F" stroke-width="3"/><ellipse cx="'+x+'" cy="'+(y+36)+'" rx="30" ry="40" fill="'+bc[(i+1)%5]+'"/><ellipse cx="'+x+'" cy="'+(y+36)+'" rx="80" ry="90" fill="'+bc[(i+1)%5]+'" opacity=".16"/>';}
+    } else if(n==='atap'){
+      h+='<defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2A2D63"/><stop offset=".45" stop-color="#B4496F"/><stop offset=".72" stop-color="#F28A5A"/><stop offset="1" stop-color="#FFD27A"/></linearGradient></defs><rect width="1600" height="900" fill="url(#a)"/><circle cx="800" cy="560" r="130" fill="#FFE5A3"/>';
+      h+='<ellipse cx="300" cy="250" rx="220" ry="34" fill="#fff" opacity=".16"/><ellipse cx="1200" cy="180" rx="260" ry="30" fill="#fff" opacity=".14"/><ellipse cx="900" cy="330" rx="180" ry="24" fill="#fff" opacity=".12"/>';
+      for(i=0;i<20;i++){h+='<rect x="'+(i*84-10)+'" y="'+(560+((i*47)%110))+'" width="'+(60+(i*13)%40)+'" height="400" fill="#1C1F44"/>';}
+      h+='<rect y="730" width="1600" height="170" fill="#3C4070"/><rect y="720" width="1600" height="16" fill="#2B2E58"/>';
+      h+='<rect x="1250" y="430" width="180" height="300" fill="#2A2D58"/><rect x="1240" y="414" width="200" height="24" fill="#1C1F44"/><rect x="1290" y="730" width="12" height="40" fill="#1C1F44"/><rect x="1380" y="730" width="12" height="40" fill="#1C1F44"/>';
+      for(i=0;i<14;i++){h+='<rect x="'+(i*120+30)+'" y="620" width="8" height="110" fill="#14172F"/>';}
+      h+='<rect y="620" width="1600" height="8" fill="#14172F"/><rect y="668" width="1600" height="6" fill="#14172F"/>';
+    } else {
+      h+='<rect width="1600" height="900" fill="#0E1730"/>';
+      for(i=0;i<40;i++){h+='<circle cx="'+((i*397)%1600)+'" cy="'+((i*211)%420)+'" r="'+(1+(i%3))+'" fill="#fff" opacity=".6"/>';}
+      h+='<rect x="940" y="130" width="420" height="380" fill="#16264A" stroke="#2A3C6B" stroke-width="12"/><path d="M1150 130V510M940 320H1360" stroke="#2A3C6B" stroke-width="8"/><circle cx="1230" cy="250" r="56" fill="#E8EEF9"/><circle cx="1250" cy="236" r="52" fill="#16264A"/>';
+      h+='<rect y="680" width="1600" height="220" fill="#111C38"/><rect x="100" y="600" width="820" height="220" rx="10" fill="#25345C"/><rect x="130" y="570" width="220" height="70" rx="22" fill="#34467A"/><rect x="1060" y="640" width="440" height="40" fill="#1B2540"/><rect x="1230" y="620" width="70" height="20" rx="4" fill="#9CC4FF"/><circle cx="1265" cy="628" r="150" fill="#78B4FF" opacity=".16"/>';
+    }
+    return h+'</svg>';
+  }
+
+  /* ===== keadaan ===== */
+  var state,queue=[],mode='title',stageMain=['F','T'],moods={F:'n',T:'n'},bgName='',typing=false,timer=null,full='',cardTimer=null,cardCb=null,logLines=[],curChoice=null;
+  var SPEEDS=[['Normal',26],['Cepat',9],['Instan',0]];
+  var speedIdx=0;
+  try{if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) speedIdx=2;}catch(e){}
+  function newState(){return {ch:0,love:0,flags:{}};}
+  state=newState();
+  function clamp(v){return Math.max(0,Math.min(100,v));}
+  function meter(){barFill.style.width=clamp(state.love)+'%';}
+
+  function toast(d){
+    if(!d) return;
+    toastEl.hidden=true;toastEl.className='toast'+(d<0?' neg':'');
+    toastEl.textContent=(d>0?'+':'')+d+' Kedekatan';
+    void toastEl.offsetWidth;toastEl.hidden=false;
+  }
+
+  /* ===== latar ===== */
+  function setBg(n,instant){
+    if(n===bgName) return;
+    bgName=n;
+    var apply=function(){bgEl.innerHTML=sceneSVG(n);bgEl.style.opacity=1;rainEl.classList.toggle('on',n==='hujan');};
+    if(instant){apply();return;}
+    bgEl.style.opacity=0;setTimeout(apply,240);
+  }
+
+  /* ===== sprite di panggung ===== */
+  function setSlot(el,code,mood){
+    if(!code){el.classList.remove('on');return;}
+    var key=code+mood;
+    if(el.dataset.key!==key){el.innerHTML=sprite(code,mood);el.dataset.key=key;}
+    el.classList.add('on');
+  }
+  function renderStage(sp,mood){
+    var sup=['R','D','B','S','K'].indexOf(sp)>=0?sp:null;
+    if(sp==='F'||sp==='T') moods[sp]=mood||'n';
+    setSlot(slotL,stageMain.indexOf('F')>=0?'F':null,moods.F);
+    setSlot(slotR,stageMain.indexOf('T')>=0?'T':null,moods.T);
+    if(sup) setSlot(slotC,sup,mood||'n'); else slotC.classList.remove('on');
+    [[slotL,'F'],[slotR,'T'],[slotC,sup]].forEach(function(p){
+      var el=p[0],c=p[1];
+      el.classList.toggle('dim',!!sp&&sp!=='N'&&c!==sp);
+      el.classList.toggle('speaking',!!c&&c===sp);
+    });
+  }
+
+  /* ===== teks ===== */
+  function typeText(t){
+    clearInterval(timer);full=t;nextInd.classList.remove('on');
+    var sp=SPEEDS[speedIdx][1];
+    if(!sp){textEl.textContent=t;typing=false;nextInd.classList.add('on');return;}
+    typing=true;textEl.textContent='';var i=0;
+    timer=setInterval(function(){i+=1;textEl.textContent=t.slice(0,i);if(i>=t.length) finishTyping();},sp);
+  }
+  function finishTyping(){clearInterval(timer);typing=false;textEl.textContent=full;nextInd.classList.add('on');}
+  function showLine(n){
+    var w=n[0],t=n[1],m=n[2];mode='line';
+    dialogWrap.classList.remove('off');
+    if(w==='N'){nameTag.style.display='none';}
+    else{nameTag.style.display='';nameTag.textContent=CH[w].name;nameTag.style.background=CH[w].tag;}
+    textEl.classList.toggle('narr',w==='N');
+    if((w==='F'||w==='T')&&stageMain.indexOf(w)<0) stageMain=stageMain.concat(w);
+    renderStage(w,m);
+    logLines.push({k:w==='N'?'n':'l',w:w,t:t});
+    typeText(t);
+  }
+
+  /* ===== alur ===== */
+  function startChapter(i){
+    state.ch=i;put(KEY,{ch:i,love:state.love,flags:state.flags});
+    var c=chapters[i];queue=c.nodes.slice();
+    chip.textContent=c.label+' · '+c.title;
+    showCard(c);
+  }
+  function showCard(c){
+    mode='card';
+    cardEl.innerHTML='<div class="card-in"><p class="eb">'+c.label+'</p><h2>'+c.title+'</h2><p class="sb">'+c.sub+'</p><p class="hint">Ketuk untuk lanjut</p></div>';
+    cardEl.hidden=false;dialogWrap.classList.add('off');
+    clearTimeout(cardTimer);cardTimer=setTimeout(leaveCard,3000);
+  }
+  function leaveCard(){
+    if(mode!=='card') return;
+    clearTimeout(cardTimer);cardEl.hidden=true;next();
+  }
+  function showPostit(n){
+    mode='postit';
+    postitLayer.innerHTML='<div class="pcard"><p class="from">'+(n.from||'Catatan dari Teppi')+'</p><p class="body">'+n.postit+'</p><p class="hint">Ketuk untuk menyimpan</p></div>';
+    postitLayer.hidden=false;
+    logLines.push({k:'p',w:'P',t:n.postit});
+  }
+  function closePostit(){postitLayer.hidden=true;next();}
+  function showChoice(c){
+    mode='choice';curChoice=c;
+    dialogWrap.classList.add('off');
+    choiceLayer.innerHTML='<div class="choice-in"><p class="q">'+c.q+'</p>'+c.opts.map(function(o,i){return '<button type="button" class="pick c'+(i%3)+'" data-i="'+i+'"><b>'+(i+1)+'</b><span>'+o.t+'</span></button>';}).join('')+'</div>';
+    choiceLayer.hidden=false;
+    var b=choiceLayer.querySelector('.pick');if(b) b.focus({preventScroll:true});
+  }
+  function choose(i){
+    if(mode!=='choice'||!curChoice) return;
+    var o=curChoice.opts[i];if(!o) return;
+    curChoice=null;choiceLayer.hidden=true;
+    state.love+=o.d;if(o.f) state.flags[o.f]=1;
+    meter();toast(o.d);
+    logLines.push({k:'c',w:'C',t:o.t});
+    queue=(o.then||[]).concat(queue);
+    next();
+  }
+  function next(){
+    for(;;){
+      if(!queue.length){
+        if(state.ch+1<chapters.length){startChapter(state.ch+1);return;}
+        showEnd({id:endingKey(state)});return;
+      }
+      var n=queue.shift();
+      if(Array.isArray(n)){showLine(n);return;}
+      if(n.bg){setBg(n.bg);continue;}
+      if(n.stage){stageMain=n.stage.slice();renderStage(null);continue;}
+      if(n.if){queue=n.if(state).concat(queue);continue;}
+      if(n.postit){showPostit(n);return;}
+      if(n.choice){showChoice(n.choice);return;}
+      if(n.end){showEnd({id:n.end});return;}
+    }
+  }
+  function advance(){
+    if(mode==='card') leaveCard();
+    else if(mode==='postit') closePostit();
+    else if(mode==='line'){if(typing) finishTyping(); else next();}
+  }
+
+  /* ===== ending ===== */
+  function foundList(){var f=get(EKEY);return Array.isArray(f)?f:[];}
+  function showEnd(e){
+    mode='end';clearInterval(timer);
+    var id=e.id,info=ENDINGS[id]||ENDINGS.C,found=foundList();
+    if(found.indexOf(id)<0){found.push(id);put(EKEY,found);}
+    var order=['A','B','C','S'];
+    var tally=order.map(function(k,i){
+      var has=found.indexOf(k)>=0;
+      return '<div class="tl t'+i+(has?'':' off')+'"><small>Ending '+(i+1)+'</small>'+(has?ENDINGS[k].name:'???')+'</div>';
+    }).join('');
+    dialogWrap.classList.add('off');
+    endEl.innerHTML='<div class="end-in"><div class="end-box"><p class="tamat">Tamat</p><h2>'+info.name+'</h2><p class="blurb">'+info.blurb+'</p><p class="score">Kedekatan akhir: '+clamp(state.love)+' dari 100</p><div class="tally">'+tally+'</div><div class="btns"><button class="primary" id="btnAgain" type="button">Main lagi dari awal</button><button class="ghost" id="btnToTitle" type="button">Ke halaman judul</button></div></div></div>';
+    endEl.hidden=false;
+    $('#btnAgain').onclick=function(){endEl.hidden=true;begin();};
+    $('#btnToTitle').onclick=function(){endEl.hidden=true;toTitle();};
+  }
+
+  /* ===== judul, riwayat, kontrol ===== */
+  function resetUI(){
+    clearInterval(timer);clearTimeout(cardTimer);
+    cardEl.hidden=true;postitLayer.hidden=true;choiceLayer.hidden=true;logEl.hidden=true;endEl.hidden=true;
+    stageMain=['F','T'];moods={F:'n',T:'n'};curChoice=null;logLines=[];
+    [slotL,slotC,slotR].forEach(function(s){s.classList.remove('on','dim','speaking');});
+  }
+  function begin(){
+    resetUI();state=newState();meter();titleEl.hidden=true;
+    setBg('gerbang',true);startChapter(0);
+  }
+  function resume(){
+    var sv=get(KEY);if(!sv){begin();return;}
+    resetUI();state={ch:sv.ch,love:sv.love||0,flags:sv.flags||{}};meter();titleEl.hidden=true;
+    setBg('kelas',true);startChapter(sv.ch);
+  }
+  function toTitle(){
+    resetUI();mode='title';titleEl.hidden=false;dialogWrap.classList.add('off');
+    textEl.textContent='';chip.textContent='Kursi di Sebelah Jendela';
+    var sv=get(KEY),b=$('#btnContinue');
+    if(sv&&typeof sv.ch==='number'){b.hidden=false;b.textContent='Lanjutkan dari '+chapters[sv.ch].label;}else b.hidden=true;
+    var f=foundList();$('#foundCount').textContent=f.length?'Ending ditemukan: '+f.length+' dari 4':'';
+    setBg('kelas',true);
+  }
+  function openLog(){
+    if(mode==='title') return;
+    var prev=mode;
+    var h='<div class="log-in"><div class="log-top"><h3>Riwayat</h3><button class="mini" id="btnCloseLog" type="button">Tutup</button></div>';
+    logLines.forEach(function(l){
+      if(l.k==='l') h+='<p class="ln"><b>'+CH[l.w].name+'</b>'+l.t+'</p>';
+      else if(l.k==='n') h+='<p class="ln n">'+l.t+'</p>';
+      else if(l.k==='c') h+='<p class="ln c"><b>Pilihanmu</b>'+l.t+'</p>';
+      else h+='<p class="ln p">'+l.t+'</p>';
+    });
+    if(!logLines.length) h+='<p class="ln n">Belum ada percakapan.</p>';
+    logEl.innerHTML=h+'</div>';logEl.hidden=false;
+    logEl.scrollTop=logEl.scrollHeight;
+    $('#btnCloseLog').onclick=function(){logEl.hidden=true;};
+  }
+
+  app.addEventListener('click',function(e){
+    if(e.target.closest('button,.hud,.choice-layer,.log,.title-screen,.end-screen')) return;
+    advance();
+  });
+  choiceLayer.addEventListener('click',function(e){
+    var b=e.target.closest('.pick');if(b) choose(+b.dataset.i);
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!logEl.hidden){logEl.hidden=true;return;}
+    if(!logEl.hidden) return;
+    if(mode==='choice'&&/^[1-3]$/.test(e.key)){choose(+e.key-1);return;}
+    if(e.key===' '||e.key==='Enter'||e.key==='ArrowRight'){
+      if(e.target&&e.target.closest&&e.target.closest('button')) return;
+      if(mode==='card'||mode==='postit'||mode==='line'){e.preventDefault();advance();}
+    }
+  });
+  $('#btnLog').onclick=openLog;
+  $('#btnMenu').onclick=toTitle;
+  $('#btnSpeed').onclick=function(){
+    speedIdx=(speedIdx+1)%SPEEDS.length;
+    this.textContent='Teks: '+SPEEDS[speedIdx][0];
+    if(typing) finishTyping();
+  };
+  $('#btnSpeed').textContent='Teks: '+SPEEDS[speedIdx][0];
+  $('#btnStart').onclick=begin;
+  $('#btnContinue').onclick=resume;
+
+  $('#titleArt').innerHTML='<div class="ta f">'+sprite('F','h')+'</div><div class="ta t">'+sprite('T','s')+'</div>';
+  meter();toTitle();
+})();
+</script>
+
+</body></html>
