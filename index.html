@@ -88,9 +88,7 @@ button:focus-visible{outline:3px solid var(--postit);outline-offset:2px}
 .pick{display:flex;gap:14px;align-items:flex-start;text-align:left;border:0;border-radius:3px;padding:14px 18px;color:var(--ink);font-size:18px;font-weight:700;line-height:1.35;box-shadow:0 8px 18px rgba(0,0,0,.4);transition:transform .15s}
 .pick b{font-family:var(--f-display);font-size:22px;line-height:1;opacity:.55;flex:none;padding-top:1px}
 .pick span{min-width:0}
-.pick.c0{background:var(--postit);transform:rotate(-.8deg)}
-.pick.c1{background:var(--pink);transform:rotate(.7deg)}
-.pick.c2{background:var(--mint);transform:rotate(-.4deg)}
+.pick{background:var(--postit);transform:rotate(var(--rot,0deg))}
 .pick:hover,.pick:focus-visible{transform:translateY(-3px) rotate(0)}
 
 /* kartu bab */
@@ -270,7 +268,7 @@ button:focus-visible{outline:3px solid var(--postit);outline-offset:2px}
 
 <script id="story">
 /* ===== CERITA ===== */
-const N='N',F='F',T='T',R='R',D='D',B='B',S='S',K='K';
+const N='N',F='F',T='T',R='R',D='D',B='B',S='S',K='K',M='M';
 
 function endingKey(s){
   const f=s.flags;
@@ -526,6 +524,21 @@ const chapters=[
 {label:'Bab 3',title:'Belajar di Perpustakaan',sub:'Tiga puluh menit jadi tiga jam',nodes:[
   {bg:'perpus'},{stage:['F','T']},
   [N,'Perpustakaan sepulang sekolah sepi. Hanya ada Bu Lina penjaga perpustakaan yang tertidur dengan topi menutupi wajah, dan kipas angin tua yang berputar malas.'],
+  {stage:['F']},
+  [N,'Aku datang lebih dulu dan membuka buku Fisika. Dari sela halaman, selembar kertas terlipat jatuh ke pangkuanku. Tulisan tangan kotak-kotak, tegak, rapi seperti garis penggaris.'],
+  {postit:'Orang yang ingin berteman denganmu tidak bisa melihat matamu kalau kamu terus menunduk. Coba angkat kepala sekali saja hari ini. — Seseorang yang pernah menunduk juga',from:'Catatan tanpa nama'},
+  {choice:{q:'Siapa yang menyelipkan ini ke bukuku?',opts:[
+    {t:'Pasti Teppi. Siapa lagi yang peduli?',d:0,f:'tebak_teppi',then:[
+      [N,'Aku menatap huruf-hurufnya. Tulisan Teppi bulat dan miring, penuh tanda seru. Ini jelas bukan. Tapi aku tetap curiga, karena tebakan paling gampang biasanya menang.']
+    ]},
+    {t:'Mungkin Raka, iseng',d:0,then:[
+      [N,'Raka? Raka tidak pernah menulis lebih dari tiga kata dan semuanya salah eja. Tapi siapa tahu dia sedang latihan.']
+    ]},
+    {t:'Simpan saja, jangan dipikirkan',d:1,then:[
+      [N,'Aku melipatnya dan menyelipkannya ke saku. Tidak dipikirkan. Tentu saja langsung kupikirkan sepanjang sore.']
+    ]}
+  ]}},
+  {stage:['F','T']},
   [N,'Teppi datang membawa setumpuk catatan warna-warni: biru untuk rumus, hijau untuk contoh soal, merah muda untuk “hal-hal yang masih kubingungkan”. Warna merah mudanya paling banyak.'],
   [T,'Firjan! Aku bawa bekal permen! Biar otak kita bahagia! Ayo mulai! Gerak parabola itu kenapa lintasannya melengkung? Kenapa bukan lurus? Terus kenapa kecepatan horizontalnya tidak berubah?','o'],
   [N,'Aku mengambil napas. Anehnya, tanganku langsung bergerak menggambar lintasan di kertas.'],
@@ -580,7 +593,59 @@ const chapters=[
   [R,'Dua monster.','o'],
   [T,'SATU POIN!! Aku akan menyusulmu di ulangan berikutnya!','o'],
   [F,'Aku... tunggu.','m'],
-  [N,'Aku baru sadar: aku baru saja menantang seorang cewek dengan kalimat utuh. Tanpa tergagap. Raka bahkan menjatuhkan penghapusnya.']
+  [N,'Aku baru sadar: aku baru saja menantang seorang cewek dengan kalimat utuh. Tanpa tergagap. Raka bahkan menjatuhkan penghapusnya.'],
+  {rand:[
+    [
+      {bg:'perpus'},
+      [N,'Sorenya, di tengah latihan soal, lampu perpustakaan mendadak mati. Listrik padam di separuh Kotabaru.'],
+      [T,'FIRJAN?! Kamu di mana?! Aku tidak suka gelap!','o'],
+      {choice:{q:'Gelap total. Suara Teppi bergetar. Aku...',opts:[
+        {t:'Nyalakan senter HP dan ulurkan tanganku',d:3,then:[
+          [N,'Senter kecil itu menerangi wajahnya. Dia menggenggam ujung lengan bajuku, lalu menyadari, lalu tidak melepaskannya.'],
+          [T,'Hanya sampai lampunya hidup ya.','s']
+        ]},
+        {t:'Ikut teriak lebih keras darinya',d:2,then:[
+          [F,'AAAAA! GELAAAP!','o'],
+          [T,'...Firjan?','o'],
+          [N,'Kami berdua teriak sampai Bu Lina terbangun dan bertanya siapa yang meninggal. Teppi tertawa sampai menangis, dan takutnya hilang.']
+        ]},
+        {t:'Tetap duduk dan berpura-pura tenang',d:-1,then:[
+          [F,'Tenang saja. Gelap itu cuma tidak ada cahaya.','n'],
+          [T,'Itu penjelasan fisika yang sama sekali tidak menenangkan!','o'],
+          [N,'Benar. Aku baru belajar bahwa kebenaran tidak selalu menolong.']
+        ]}
+      ]}}
+    ],
+    [
+      {bg:'perpus'},
+      [N,'Sore itu Bu Lina terbangun dengan marah. Rupanya dia kehilangan satu buku dan menuduh kami berdua.'],
+      [B,'Siapa yang membawa kabur kamus tebal itu? Kalian hukuman! Rapikan rak sejarah!','n'],
+      [N,'Kami menyusun buku selama satu jam. Di sela-sela buku sejarah, Teppi menemukan kamus yang hilang: Raka ketiduran memakainya sebagai bantal di rak paling belakang.'],
+      [T,'Firjan, boleh nanya? Kalau kamus ini bangun, dia bakal protes tidak ya?','l'],
+      [F,'Dia sudah protes. Dari tadi bunyinya “kres”.','m'],
+      [T,'Hahahaha!','l'],
+      [N,'Hukuman paling menyenangkan yang pernah kuterima.']
+    ],
+    [
+      {bg:'kelas'},
+      [N,'Sepulang sekolah, seekor kucing belang tiga mendadak masuk kelas dan melompat ke pangkuan Teppi seolah sudah kenal bertahun-tahun.'],
+      [T,'FIRJAN! KUCING! Namanya siapa?! Boleh dipelihara?! Boleh nanya kenapa kucing suka kardus?!','o'],
+      {choice:{q:'Kucing itu menatapku. Aku selalu alergi kucing. Aku...',opts:[
+        {t:'Ikut mengelus walau hidung mulai gatal',d:3,then:[
+          [N,'Aku bersin sembilan kali. Teppi tertawa sampai terduduk. Anehnya, bersin pun terasa menyenangkan.']
+        ]},
+        {t:'Mundur tiga langkah, mengaku alergi',d:1,then:[
+          [F,'Aku... alergi kucing.','k'],
+          [T,'Kenapa tidak bilang dari tadi?! Aku bawa dia ke luar!','o'],
+          [N,'Dia membawa kucing itu keluar dan kembali dengan wajah bersalah. Aku merasa aneh: biasanya aku yang minta maaf.']
+        ]},
+        {t:'Beri nama kucing itu “Turunan”',d:2,then:[
+          [F,'Namanya Turunan. Karena dia datang tiba-tiba dan kita tidak bisa menghitungnya.','n'],
+          [T,'Itu nama terbaik di dunia! Turunan!','l']
+        ]}
+      ]}}
+    ]
+  ]}
 ]},
 
 /* ---------- BAB 4 ---------- */
@@ -704,6 +769,40 @@ const chapters=[
     [T,'Terima kasih sudah mengantarku, Firjan.','n'],
     [F,'Sama-sama.','n'],
     [N,'Angkot itu berangkat. Aku berdiri di halte, merasa ada kalimat yang seharusnya kuucapkan, tapi tidak tahu apa.']
+  ]},
+  {rand:[
+    [
+      [N,'Sendirian di halte, aku baru sadar ada yang janggal. Bu Eni dari warung seberang melambai sambil membawa gelas plastik berasap.'],
+      [K,'Nak Firjan! Ini teh manis panas. Sudah dibayar. Katanya titipan dari anak perempuan berjepit kuning. Dia bilang jangan ditolak.','h'],
+      [N,'Teh itu manisnya keterlaluan. Tapi di tutup gelasnya ada gambar kecil: dua payung bersebelahan, satu biru, satu kuning. Aku menyimpan tutup gelas itu di saku seperti harta karun.']
+    ],
+    [
+      {stage:['F']},
+      [N,'Dari balik hujan muncul sosok basah kuyup mendorong sepeda dengan ban kempes.'],
+      [R,'Bro. Jangan tanya. Hari ini gue dikutuk.','b'],
+      {choice:{q:'Raka basah kuyup dan kehabisan harga diri. Aku...',opts:[
+        {t:'Ajak Raka berteduh dan berbagi payung',d:2,then:[
+          [N,'Kami berdesakan di bawah payung biru kecil. Raka bercerita bahwa dia baru ditabrak ayam.'],
+          [R,'Satu ayam, bro. Satu. Dan dia menang.','m']
+        ]},
+        {t:'Pura-pura tidak kenal dan menunduk',d:1,then:[
+          [R,'Gue lihat lo, Firjan.','m'],
+          [F,'Ah... Raka. Tidak lihat.','k'],
+          [R,'Lo bahkan menunduknya jelek.','m']
+        ]},
+        {t:'Foto Raka sebagai bahan ledekan abadi',d:0,then:[
+          [N,'Foto itu langsung menjadi stiker grup kelas selama satu semester. Raka berjanji membalas dendam. Aku belum tahu caranya.']
+        ]}
+      ]}}
+    ],
+    [
+      {stage:['F']},
+      [N,'Seorang bapak berseragam menghampiri halte sambil membawa payung hitam besar. Pak Joko, satpam sekolah.'],
+      [S,'Anak muda, belum pulang? Hujan itu alasan sah buat berteduh bareng orang yang kamu suka. Bapak dulu begitu sama istri Bapak.','h'],
+      [F,'Eh, Pak! B-bukan begitu!','o'],
+      [S,'Bapak tidak bilang kamu sedang begitu. Bapak bilang Bapak dulu begitu.','m'],
+      [N,'Pak Joko pergi sambil bersiul. Aku berdiri di halte dengan wajah panas, dan kali ini hujan sama sekali tidak membantu mendinginkannya.']
+    ]
   ]}
 ]},
 
@@ -796,12 +895,46 @@ const chapters=[
   [T,'Firjan, terima kasih sudah menemaniku hari ini. Aku senang banget.','h'],
   [F,'Aku juga. Senang. Terima kasih sudah... mengajakku ngobrol terus.','s'],
   [T,'Hehe... sama-sama!','h'],
-  [N,'Aku mengucapkan hal yang seharusnya sudah kuucapkan dari lama. Dan dunia tidak runtuh. Malah rasanya lebih ringan.']
+  [N,'Aku mengucapkan hal yang seharusnya sudah kuucapkan dari lama. Dan dunia tidak runtuh. Malah rasanya lebih ringan.'],
+  {bg:'perpus'},{stage:['F']},
+  [N,'Senin sore aku ke perpustakaan mengembalikan buku. Dari balik rak tinggi, aku melihat Teppi. Dan di depannya duduk Kak Dimas, peringkat satu, pemenang seleksi olimpiade, dengan buku kalkulus tebal terbuka di antara mereka.'],
+  [N,'Teppi mencatat serius. Kak Dimas menjelaskan sambil menunjuk-nunjuk kertas. Mereka tampak akrab. Teppi bahkan tertawa kecil, tawa yang kukira hanya untukku.'],
+  [N,'Dadaku seperti tersangkut sesuatu. Ini perasaan baru, dan aku tidak suka nama yang terlintas di kepalaku: cemburu.'],
+  {choice:{q:'Aku berdiri di balik rak sambil memeluk buku Fisika. Aku...',opts:[
+    {t:'Menghampiri mereka dan menyapa seperti biasa',d:4,f:'tanya',then:[
+      {stage:['F','T']},
+      [F,'Hai, Teppi. Kak Dimas.','n'],
+      [T,'FIRJAN?! Kamu sudah lama di situ?!','o'],
+      [N,'Teppi cepat-cepat menyembunyikan buku catatannya di balik punggung. Wajahnya merah sampai ke ujung jepit kuning.'],
+      [M,'Kami cuma membahas kalkulus.','n'],
+      [T,'Iya! Kalkulus! Cuma kalkulus! Tidak ada yang lain! Boleh nanya, kamu mau es krim?','o'],
+      [F,'Teppi, kenapa kamu panik?','m'],
+      [T,'Nanti kamu juga tahu!','o'],
+      [N,'Aku tidak tahu apa yang dia sembunyikan. Tapi caranya menyembunyikan terlalu lucu untuk dicurigai.']
+    ]},
+    {t:'Pergi diam-diam dan pura-pura tidak melihat',d:-3,f:'cemburu',then:[
+      [N,'Aku meletakkan buku di meja pengembalian dan keluar tanpa suara. Di koridor, aku mengatakan pada diri sendiri bahwa aku tidak peduli. Diri sendiri tidak percaya.'],
+      [N,'Keesokan harinya Teppi menempel post-it di mejaku: “Kemarin kamu ke perpus ya? Kata Bu Lina ada yang balikin buku tapi tidak nyapa. Aku jadi kepikiran. :(”'],
+      [N,'Dia mengira aku marah padanya. Aku bahkan belum tahu aku sedang apa.']
+    ]},
+    {t:'Mengintip lebih lama, mencoba menguping',d:-1,f:'kuping',then:[
+      [T,'...Kalau pertanyaanku terlalu gampang, dia pasti bosan.','b'],
+      [M,'Dia tidak akan bosan. Percaya sama Kakak.','n'],
+      [N,'Dia? Siapa dia? Otakku langsung menyusun tiga skenario, dan semuanya buruk.'],
+      [B,'Sedang apa kamu berdiri di balik rak sejarah, Nak?','o'],
+      [F,'Eh! Mencari buku, Bu! Buku... tentang berdiri!','k'],
+      [N,'Aku diusir halus oleh Bu Lina. Untuk kali pertama, hukumannya terasa adil.']
+    ]}
+  ]}}
 ]},
 
 /* ---------- BAB 7 ---------- */
 {label:'Bab 7',title:'Tim Turunan',sub:'Cerdas cermat, dan satu kalimat yang salah dengar',nodes:[
-  {bg:'kelas'},{stage:['F','T']},
+  {bg:'kelas'},{stage:['F']},
+  [N,'Pagi itu, di dalam laci mejaku, ada lipatan kertas kecil lagi. Tulisan yang sama: kotak-kotak, tegak, rapi.'],
+  {postit:'Besok ada satu soal yang tidak bisa dijawab sendirian. Jangan terlalu bangga. Jangan terlalu takut. — Seseorang yang pernah menunduk juga',from:'Catatan tanpa nama, yang kedua'},
+  [N,'Soal yang tidak bisa dijawab sendirian? Siapa pun penulisnya, dia tahu sesuatu tentang festival ini yang tidak kuketahui.'],
+  {stage:['F','T']},
   [D,'Pengumuman! Lomba cerdas cermat festival sekolah. Perwakilan kelas kita: Firjan dan Teppi! Tidak ada protes!','h'],
   [R,'Gue protes. Kenapa bukan gue?','o'],
   [D,'Karena nilai Fisika lo empat puluh.','m'],
@@ -841,15 +974,67 @@ const chapters=[
       [N,'Aku tahu aku bersikap bodoh. Tapi aku belum tahu cara berhenti.']
     ]}
   ]}},
+  {bg:'perpus'},{stage:['F']},
+  [N,'Sehari sebelum festival, aku berlatih sendirian di perpustakaan. Langkah kaki berhenti tepat di belakangku.'],
+  [M,'Soal nomor tujuh. Rumusmu benar, tapi satuannya terbalik.','n'],
+  [F,'Kak Dimas?','o'],
+  [N,'Kak Dimas. Peringkat satu. Pemenang seleksi olimpiade. Orang yang selisih dua poinnya masih mengganggu tidurku.'],
+  [M,'Boleh duduk? Dan tolong jangan hang. Sekali ini saja.','m'],
+  [N,'Dia mengeluarkan pulpen hitam dan menulis satu kalimat di pinggir kertasku. Kotak-kotak, tegak, rapi. Tulisan yang sama dengan dua lipatan kertas di sakuku.'],
+  [F,'Catatan... tanpa nama itu. Dari Kakak?','o'],
+  [M,'Seseorang yang pernah menunduk juga. Itu aku.','n'],
+  {if:s=>s.flags.tebak_teppi?[
+    [F,'Aku kira Teppi...','b'],
+    [M,'Banyak orang kira begitu. Teppi malah selalu bertanya pada siapa pun, tapi tidak pernah menyembunyikan apa-apa.','m']
+  ]:[
+    [F,'Aku sama sekali tidak menyangka.','o'],
+    [M,'Itu intinya. Kalau kamu menyangka, bukan rahasia namanya.','m']
+  ]},
+  [M,'Dua tahun lalu aku peringkat dua tiga kali berturut-turut dan tidak berani bicara dengan siapa pun. Aku melihatmu di sini tiap sore, dan rasanya seperti melihat cermin.','b'],
+  {if:s=>(s.flags.cemburu||s.flags.kuping)?[
+    [F,'Kak... waktu itu aku melihat Kakak dan Teppi di perpustakaan.','b'],
+    [M,'Yang di balik rak itu kamu, ya? Aku melihat sepatumu.','m'],
+    [F,'Itu... tidak sengaja.','k'],
+    [M,'Teppi minta diajari kalkulus lanjutan. Katanya supaya pertanyaannya tidak membosankan untukmu. Katanya kamu pasti bosan kalau dia cuma bertanya hal-hal gampang.','n'],
+    [N,'Cemburu itu mencair dan berubah menjadi sesuatu yang jauh lebih hangat, dan jauh lebih membingungkan.']
+  ]:[
+    [F,'Kak, waktu itu Teppi menyembunyikan buku catatannya waktu aku datang.','n'],
+    [M,'Itu catatan kalkulus yang dia pelajari diam-diam. Katanya supaya pertanyaannya tidak membosankan untukmu.','n'],
+    [N,'Seorang cewek mempelajari kalkulus lanjutan hanya agar pertanyaannya layak kudengar. Aku tidak tahu harus tertawa atau menangis.']
+  ]},
+  [M,'Satu hal lagi. Aku tidak ikut lomba besok. Tapi aku yang menyusun soal-soalnya.','m'],
+  [F,'Jadi Kakak membocorkan soal?','o'],
+  [M,'Tidak. Tapi aku menaruh satu soal yang hanya bisa dijawab kalau kalian berdua percaya satu sama lain.','n'],
+  {choice:{q:'Kak Dimas menutup bukunya dan menatapku, menunggu. Aku...',opts:[
+    {t:'Tanya: “Kak, bagaimana caranya berhenti hang?”',d:4,f:'nasihat',then:[
+      [M,'Berhenti memikirkan kalimat yang sempurna. Mulai dari kalimat yang jujur, sekecil apa pun.','n'],
+      [M,'Kalimat jujur itu biasanya terdengar aneh, tapi orang yang tepat akan mendengarkannya dengan serius.','s'],
+      [N,'Aku menulis kalimat itu di pinggir bukuku, di bawah tulisan kotak-kotaknya.']
+    ]},
+    {t:'Bilang: “Aku tidak butuh dikasihani.”',d:-1,f:'gengsi',then:[
+      [F,'Aku tidak butuh dikasihani, Kak.','n'],
+      [M,'Bagus. Gengsi itu tanda kamu masih mau bertarung. Aku dulu hampir menyerah tanpa pernah merasa gengsi sama sekali.','m'],
+      [N,'Dia justru tersenyum. Aku jadi bingung kenapa aku yang merasa kalah.']
+    ]},
+    {t:'Tanya: “Kakak suka Teppi?”',d:2,then:[
+      [M,'Hah?! Tidak! Aku sudah punya pacar di kelas dua belas. Namanya Salsa, dan dia lebih galak daripada Bu Sari.','o'],
+      [F,'Jadi... itu bukan...?','o'],
+      [M,'Bukan. Kamu ini, sekali curiga langsung percaya.','m'],
+      [N,'Aku menyimpan fakta bahwa Salsa lebih galak daripada Bu Sari sebagai informasi paling berharga hari itu.']
+    ]}
+  ]}},
+  [M,'Besok jangan cuma menjawab. Dengarkan juga. Itu bagian soal yang tidak tertulis.','n'],
   {bg:'festival'},{stage:['F','T']},
   [N,'Hari festival. Lampion digantung di sepanjang halaman sekolah, dan bau jagung bakar bercampur dengan musik dari panggung kecil.'],
   [N,'Lomba cerdas cermat digelar di panggung halaman. Penonton memenuhi bangku plastik. Raka dan Nadia duduk di barisan depan sambil membawa spanduk tulisan tangan: “TIM TURUNAN HARUS MENANG”.'],
   {if:s=>s.flags.dingin?[
+    [N,'Pembawa acara membacakan soal terakhir: “Dua orang menjawab bersamaan, jawabannya berbeda. Siapa yang benar?” Soal Kak Dimas. Aku mengerti terlambat.'],
     [N,'Skor imbang. Tinggal satu pertanyaan. Tidak ada waktu berpikir panjang. Aku menoleh ke Teppi, dia menoleh ke arahku, dan di detik yang sama kami berdua menjawab dengan jawaban yang berbeda.'],
     [N,'Jawabannya benar milik Teppi. Tapi karena kami menjawab bersamaan, juri menyatakan tidak sah. Kami kalah satu poin.'],
     [T,'Tidak apa-apa! Kita tetap seru!','h'],
     [N,'Dia tersenyum, tapi matanya tidak ikut tersenyum. Dan itu salahku.']
   ]:[
+    [N,'Pembawa acara membacakan soal terakhir: “Dua orang menjawab bersamaan, jawabannya berbeda. Siapa yang benar?” Soal yang hanya bisa dijawab kalau dua orang saling percaya. Aku teringat pesan Kak Dimas.'],
     [N,'Skor imbang. Tinggal satu pertanyaan. Aku menoleh ke Teppi, dia menoleh padaku, dan tanpa kata aku tahu: biar dia yang jawab.'],
     [T,'Jawabannya: seperempat!','o'],
     [N,'Juri mengangguk. Tepuk tangan menggelegar. Tim Turunan menang.'],
@@ -957,6 +1142,14 @@ const chapters=[
 
 /* ---------- EPILOG ---------- */
 {label:'Epilog',title:'Setelah Ujian Akhir',sub:'Akhir semester',nodes:[
+  {bg:'gerbang'},{stage:['F']},
+  [N,'Sebelum rapor dibagikan, Kak Dimas menungguku di gerbang. Dia membawa map tebal dan terlihat seperti orang yang baru lulus dari sesuatu.'],
+  [M,'Aku tidak akan menulis catatan lagi. Kamu tidak butuh itu.','n'],
+  [F,'Kak, boleh nanya satu hal?','n'],
+  [M,'Hah. Ternyata menular.','l'],
+  [F,'Kenapa Kakak membantuku?','n'],
+  [M,'Karena dulu ada yang menyelipkan catatan ke bukuku, dan aku tidak pernah tahu siapa.','s'],
+  [N,'Aku ingin bertanya siapa. Tapi Kak Dimas sudah tersenyum, dan aku mengerti: lingkaran ini belum selesai. Suatu hari, mungkin, aku yang akan menyelipkan catatan itu ke buku seseorang yang sedang menunduk.'],
   {if:s=>{const k=endingKey(s);return k==='S'?ES:k==='A'?EA:k==='B'?EB:EC;}}
 ]}
 
@@ -1166,7 +1359,8 @@ const chapters=[
     D:{name:'Nadia',tag:'#B7E4A8',skin:'#F2CBA6',hair:'#A9C2B5',brow:'#3B2E2A',shirt:'#F3F5F9',style:'hijab'},
     B:{name:'Bu Sari',tag:'#F4B6B6',skin:'#E0B088',hair:'#2B2B2B',shirt:'#7A2E3C',style:'bun'},
     S:{name:'Pak Joko',tag:'#C9D4E5',skin:'#C99870',hair:'#2A2A2A',shirt:'#3F5A7A',cap:'#2E4A6B',style:'cap'},
-    K:{name:'Bu Eni',tag:'#FFC6A0',skin:'#E0AE86',hair:'#D88A8A',brow:'#3B2E2A',shirt:'#E9D6C4',style:'hijab'}
+    K:{name:'Bu Eni',tag:'#FFC6A0',skin:'#E0AE86',hair:'#D88A8A',brow:'#3B2E2A',shirt:'#E9D6C4',style:'hijab'},
+    M:{name:'Kak Dimas',tag:'#B8C7F0',skin:'#D9A87C',hair:'#1E1E26',shirt:'#F3F5F9',style:'side'}
   };
   var INK='#1D1A24',MOUTH='#7A2A33';
 
@@ -1211,6 +1405,7 @@ const chapters=[
     if(c.style==='spiky') front='<path d="M50 112C42 70 70 40 100 40C132 40 160 68 150 112C142 92 128 82 110 84C100 92 82 86 72 82C60 88 52 100 50 112Z" fill="'+c.hair+'"/><path d="M64 62L58 40L80 52ZM96 46L100 26L116 46ZM122 50L140 34L142 60Z" fill="'+c.hair+'"/>';
     if(c.style==='bob') front='<path d="M50 110C58 72 86 62 100 62C124 62 148 76 152 110C138 92 120 86 100 88C80 88 62 94 50 110Z" fill="'+c.hair+'"/><rect x="124" y="74" width="22" height="8" rx="3" fill="#FFD84D" transform="rotate(-18 135 78)"/>';
     if(c.style==='raka') front='<path d="M50 108C44 74 58 52 74 56L80 38L94 52L106 34L118 52L134 42L138 60C152 68 154 92 150 108C140 88 120 82 100 82C80 82 62 88 50 108Z" fill="'+c.hair+'"/>';
+    if(c.style==='side') front='<path d="M50 112C44 70 72 42 104 44C136 46 156 70 150 112C142 94 128 80 110 76C92 72 64 84 50 112Z" fill="'+c.hair+'"/>';
     if(c.style==='bun') front='<path d="M50 112C48 70 78 52 100 52C124 52 152 70 150 112C138 86 120 80 100 80C80 80 62 86 50 112Z" fill="'+c.hair+'"/>';
     if(c.style==='cap') front='<path d="M48 94C50 54 76 40 100 40C126 40 150 54 152 94Z" fill="'+c.cap+'"/><rect x="42" y="88" width="116" height="11" rx="5" fill="#243B57"/>';
 
@@ -1228,6 +1423,7 @@ const chapters=[
     var blush=mood==='s'?0.8:(mood==='h'||mood==='l')?0.5:0.24;
     var face='<g fill="none" stroke="'+br+'" stroke-width="4" stroke-linecap="round"><path d="'+brows[0]+'"/><path d="'+brows[1]+'"/></g>'+eyesFor(mood)+mouthFor(mood)+
       '<ellipse cx="66" cy="140" rx="10" ry="5.5" fill="#FF7A90" opacity="'+blush+'"/><ellipse cx="134" cy="140" rx="10" ry="5.5" fill="#FF7A90" opacity="'+blush+'"/>';
+    if(code==='M') face+='<g fill="none" stroke="#2B2B33" stroke-width="3"><rect x="64" y="110" width="32" height="24" rx="6"/><rect x="104" y="110" width="32" height="24" rx="6"/><path d="M96 120H104"/></g>';
     if(code==='B') face+='<g fill="none" stroke="#5A4A3A" stroke-width="3"><circle cx="80" cy="122" r="15"/><circle cx="120" cy="122" r="15"/><path d="M95 120H105"/></g>';
     if(code==='S') face+='<path d="M86 146Q100 139 114 146Q108 152 100 148Q92 152 86 146Z" fill="#2A2A2A"/>';
     s='<svg viewBox="0 0 200 282" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+c.name+'">'+back+body+neck+mid+head+frame+front+face+'</svg>';
@@ -1347,7 +1543,7 @@ const chapters=[
     el.classList.add('on');
   }
   function renderStage(sp,mood){
-    var sup=['R','D','B','S','K'].indexOf(sp)>=0?sp:null;
+    var sup=['R','D','B','S','K','M'].indexOf(sp)>=0?sp:null;
     if(sp==='F'||sp==='T') moods[sp]=mood||'n';
     setSlot(slotL,stageMain.indexOf('F')>=0?'F':null,moods.F);
     setSlot(slotR,stageMain.indexOf('T')>=0?'T':null,moods.T);
@@ -1382,6 +1578,7 @@ const chapters=[
 
   /* ===== alur ===== */
   function startChapter(i){
+    meter();
     state.ch=i;put(KEY,{ch:i,love:state.love,flags:state.flags});
     var c=chapters[i];queue=c.nodes.slice();
     chip.textContent=c.label+' · '+c.title;
@@ -1404,10 +1601,15 @@ const chapters=[
     logLines.push({k:'p',w:'P',t:n.postit});
   }
   function closePostit(){postitLayer.hidden=true;next();}
+  var PAL=['#FFD84D','#FFB4C6','#9BE3D3','#C9B8FF','#FFB27A','#9FD3FF','#D4F08A','#FF9C8F','#8FE8F0','#F5C2FF'];
+  var curOrder=[];
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=(Math.random()*(i+1))|0,t=a[i];a[i]=a[j];a[j]=t;}return a;}
   function showChoice(c){
     mode='choice';curChoice=c;
     dialogWrap.classList.add('off');
-    choiceLayer.innerHTML='<div class="choice-in"><p class="q">'+c.q+'</p>'+c.opts.map(function(o,i){return '<button type="button" class="pick c'+(i%3)+'" data-i="'+i+'"><b>'+(i+1)+'</b><span>'+o.t+'</span></button>';}).join('')+'</div>';
+    var order=shuffle(c.opts.map(function(o,i){return i;})),cols=shuffle(PAL);
+    curOrder=order;
+    choiceLayer.innerHTML='<div class="choice-in"><p class="q">'+c.q+'</p>'+order.map(function(oi,pos){var o=c.opts[oi],rot=(Math.random()*2.4-1.2).toFixed(2);return '<button type="button" class="pick" style="background:'+cols[pos%cols.length]+';--rot:'+rot+'deg" data-i="'+oi+'"><b>'+(pos+1)+'</b><span>'+o.t+'</span></button>';}).join('')+'</div>';
     choiceLayer.hidden=false;
     var b=choiceLayer.querySelector('.pick');if(b) b.focus({preventScroll:true});
   }
@@ -1416,7 +1618,7 @@ const chapters=[
     var o=curChoice.opts[i];if(!o) return;
     curChoice=null;choiceLayer.hidden=true;if(window.AUD)AUD.sfx('pick');
     state.love+=o.d;if(o.f) state.flags[o.f]=1;
-    meter();toast(o.d);
+    
     logLines.push({k:'c',w:'C',t:o.t});
     queue=(o.then||[]).concat(queue);
     next();
@@ -1432,6 +1634,7 @@ const chapters=[
       if(n.bg){setBg(n.bg);continue;}
       if(n.stage){stageMain=n.stage.slice();renderStage(null);continue;}
       if(n.if){queue=n.if(state).concat(queue);continue;}
+      if(n.rand){queue=n.rand[(Math.random()*n.rand.length)|0].concat(queue);continue;}
       if(n.postit){showPostit(n);return;}
       if(n.choice){showChoice(n.choice);return;}
       if(n.end){showEnd({id:n.end});return;}
@@ -1511,7 +1714,7 @@ const chapters=[
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape'&&!logEl.hidden){logEl.hidden=true;return;}
     if(!logEl.hidden) return;
-    if(mode==='choice'&&/^[1-3]$/.test(e.key)){choose(+e.key-1);return;}
+    if(mode==='choice'&&/^[1-3]$/.test(e.key)){var oi=curOrder[+e.key-1];if(oi!==undefined) choose(oi);return;}
     if(e.key===' '||e.key==='Enter'||e.key==='ArrowRight'){
       if(e.target&&e.target.closest&&e.target.closest('button')) return;
       if(mode==='card'||mode==='postit'||mode==='line'){e.preventDefault();advance();}
