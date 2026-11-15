@@ -251,12 +251,12 @@ button:focus-visible{outline:3px solid var(--postit);outline-offset:2px}
       <div class="title-text">
         <p class="eyebrow">Game story santai · Kelas 11 D · MAN Kotabaru</p>
         <h1><span>Kursi di</span><span>Sebelah</span><span class="mark">Jendela</span></h1>
-        <p class="tag">Firjan pintar tapi kikuk kalau bicara dengan cewek. Teppi anak baru yang super aktif dan tidak pernah berhenti bertanya. Kursi kosong di kelas cuma ada satu, tepat di sebelah Firjan.</p>
+        <p class="tag">Firjan pintar tapi kikuk kalau bicara dengan cewek. Teppi anak baru yang super aktif, sampai tiba-tiba dia jadi pendiam kalau ada Firjan. Entah malu, entah tidak suka. Dan tidak ada yang berani bertanya.</p>
         <div class="btns">
           <button class="primary" id="btnStart" type="button">Mulai Cerita</button>
           <button class="ghost" id="btnContinue" type="button" hidden>Lanjutkan</button>
         </div>
-        <p class="howto">Ketuk, klik, atau tekan Spasi untuk lanjut. Tekan 1, 2, atau 3 untuk memilih. Ada 9 bab dan 4 ending, satu di antaranya tersembunyi. Pilihanmu menentukan seberapa nyaman Firjan terbuka pada Teppi. Nyalakan suara dan pakai headphone biar lofi-nya enak.</p>
+        <p class="howto">Ketuk, klik, atau tekan Spasi untuk lanjut. Tekan 1, 2, atau 3 untuk memilih. Ada 9 bab dan 4 ending, satu di antaranya tersembunyi. Pilihanmu menentukan seberapa jauh Firjan berani memulai. Nyalakan suara dan pakai headphone biar lofi-nya enak.</p>
         <p class="found" id="foundCount"></p>
       </div>
       <div class="title-art" id="titleArt"></div>
@@ -272,117 +272,98 @@ const N='N',F='F',T='T',R='R',D='D',B='B',S='S',K='K',M='M';
 
 function endingKey(s){
   const f=s.flags;
-  if(s.love>=76 && f.catatan && f.janji && f.berani) return 'S';
-  if(s.love>=46 && (f.berani||f.menunggu)) return 'A';
-  if(s.love>=30) return 'B';
+  if(s.love>=68 && f.surat && f.inisiatif && f.berani) return 'S';
+  if(s.love>=40 && (f.berani||f.ulang)) return 'A';
+  if(s.love>=22) return 'B';
   return 'C';
 }
 
 const ENDINGS={
-  A:{name:'Kursi di Sebelah Jendela',blurb:'Firjan yang dulu hang setiap kali bicara dengan cewek akhirnya punya satu orang yang boleh dia ajak bicara tanpa henti. Dan orang itu juga suka dia.'},
-  B:{name:'Dekat, Tapi Belum Dinamai',blurb:'Mereka tidak butuh nama untuk apa yang mereka punya. Belum. Masih ada satu semester lagi untuk saling bertanya.'},
-  C:{name:'Teman Sebangku yang Baik',blurb:'Tidak semua cerita berakhir seperti komik. Tapi Firjan belajar bicara, dan itu hadiah yang tidak akan hilang.'},
-  S:{name:'Tiga Ratus Dua Belas Pertanyaan',blurb:'Satu buku catatan berisi hal yang ingin diceritakan, satu buku berisi hal yang ingin ditanyakan. Dua orang yang akhirnya saling menemukan.'}
+  A:{name:'Kursi di Sebelah Jendela',blurb:'Ternyata diam Teppi bukan tanda tidak suka. Dua orang yang sama-sama takut memulai akhirnya berhenti saling menunggu. Kursi itu tidak pernah kosong lagi.'},
+  B:{name:'Dekat, Tapi Belum Dinamai',blurb:'Mereka sudah tahu diam masing-masing bukan penolakan. Nama untuk apa yang mereka punya masih menunggu, dan untuk sekali ini, tidak ada yang buru-buru.'},
+  C:{name:'Dua Orang yang Saling Menunggu',blurb:'Tidak ada yang berbohong. Tidak ada yang jahat. Hanya dua orang yang menunggu orang lain mulai duluan, sampai semester habis. Tapi Firjan belajar satu hal: lain kali, dia yang mulai.'},
+  S:{name:'Surat-Surat Tanpa Nama',blurb:'Mereka tidak butuh keberanian untuk bicara. Mereka butuh selembar kertas kecil, dan satu sama lain. Dan ternyata, itu sudah cukup sejak awal.'}
 };
 
 const EA=[
   {bg:'kelas'},{stage:['F','T']},
-  [N,'Dua minggu ujian akhir semester berlalu seperti kereta ekspres. Di hari terakhir, Teppi menyerahkan lembar jawaban lalu berbalik padaku dengan wajah berbinar.'],
-  [T,'Firjan Firjan! Nomor empat belas jawabannya berapa? Aku mau cocokkan!','o'],
+  [N,'Dua minggu ujian akhir semester berlalu seperti kereta ekspres. Di hari terakhir, Teppi menyerahkan lembar jawaban lalu menoleh padaku. Bukan dengan wajah merah seperti kemarin-kemarin. Hanya tersenyum.'],
+  [T,'Firjan.','s'],
+  [F,'Ya?','n'],
+  [T,'Nomor empat belas jawabannya berapa? Aku mau cocokkan.','n'],
   [F,'Seperempat.','n'],
-  [T,'YES! Aku juga! Berarti kita sama!','h'],
+  [T,'Berarti kita sama.','h'],
+  [N,'Itu saja. Tidak ada tanda seru. Tidak ada tiga pertanyaan sekaligus. Tapi untuk pertama kalinya, aku tidak merasa ada dinding kaca di antara kursi kami.'],
   {if:s=>s.flags.berani?[
-    [T,'Oh iya. Firjan, aku sudah bilang “aku juga” waktu di atap, tapi aku mau bilang sekali lagi, supaya kamu tidak mengira itu mimpi.','s'],
-    [F,'Aku tidak mengira itu mimpi. Aku cek tiga kali. Aku sampai mencubit lengan.','o'],
-    [T,'Hahaha! Lengannya masih utuh?','l'],
-    [F,'Utuh. Memar sedikit.','m']
+    [T,'Aku masih ingat yang kamu katakan di atap. Aku sudah bilang “aku juga”, tapi aku mau bilang lagi biar kamu yakin itu bukan mimpi.','s'],
+    [F,'Aku sudah cek tiga kali. Aku mencubit lengan sampai memar.','o'],
+    [T,'Hahaha! Itu baru Firjan.','l']
   ]:[
-    [N,'Sepulang sekolah, aku menunggunya di gerbang. Dadaku berdetak lebih keras daripada saat ujian Fisika.'],
-    [F,'Teppi. Ujian sudah selesai. Aku... mau bilang yang waktu itu.','s'],
-    [T,'Iya! Aku sudah menunggu dua minggu! Aku sudah menebak seribu kemungkinan!','o'],
-    [F,'Aku suka kamu. Mungkin dari pertama kali kamu bertanya soal turunan dengan mata berbinar. Kamu yang membuatku akhirnya bisa bicara.','s'],
-    [T,'Jawabannya iya! Dari tadi iya! Dari dulu iya!','h'],
-    [N,'Aku tidak tergagap sama sekali. Mungkin karena kali ini, aku tahu persis apa yang ingin kukatakan.']
+    [T,'Firjan, kamu masih ingat waktu kamu bilang ingin mengulang dari awal?','s'],
+    [F,'Ingat.','n'],
+    [T,'Aku sudah menyiapkan balasannya. Tiga ratus kali latihan. Siap?','m'],
+    [F,'Siap.','h'],
+    [T,'Halo, aku Teppi. Aku suka gambar, suka teh manis, dan suka kamu. Boleh?','h']
   ]},
-  [N,'Kami berjalan pulang pelan-pelan. Aku masih sering gugup, dan kadang masih tergagap. Tapi gugupku sekarang jenis yang berbeda: bukan takut, melainkan senang.'],
-  [T,'Aku punya empat puluh tujuh pertanyaan hari ini. Siap?','m'],
-  [F,'Aku punya empat puluh tujuh jawaban.','h'],
+  [N,'Kami berjalan pulang pelan-pelan. Kadang Teppi bicara tanpa jeda tentang kucing tetangganya. Kadang kami diam, dan diamnya tidak berat.'],
+  [N,'Dulu aku kira ada dua jenis diam: diam yang artinya tidak peduli, dan diam yang artinya tidak berani. Ternyata ada jenis ketiga: diam yang artinya terlalu banyak yang ingin dikatakan.'],
   {bg:'kelas'},
   [N,'Senin berikutnya, selembar post-it kuning menempel di mejaku.'],
-  {postit:'Pertanyaan pertama hari ini: mau pulang bareng? (Jawabannya boleh “iya” saja.) — Teppi'},
-  [N,'Aku menoleh. Teppi duduk di kursi sebelah jendela, pura-pura serius membaca buku. Telinganya merah.'],
+  {postit:'Pertanyaan pertama hari ini: boleh aku duduk lebih dekat? (Jawabannya boleh “iya” saja.) — Teppi'},
   [F,'Iya.','h'],
   [T,'Cuma “iya”? Tidak ada penjelasannya?','m'],
-  [F,'Penjelasannya panjang. Aku jelaskan sepanjang jalan.','l'],
-  [N,'Di luar jendela, awan berarak pelan. Aku sudah berhenti menghitung berapa kata yang kuucapkan setiap hari. Terlalu banyak untuk dihitung.'],
+  [F,'Penjelasannya panjang. Aku jelaskan sepanjang jalan pulang.','l'],
   {end:'A'}
 ];
 
 const ES=[
   {bg:'atap'},{stage:['F','T']},
-  [N,'Sepulang ujian terakhir, aku membawa sesuatu di dalam tas: buku catatan kecil yang sudah lama kusimpan.'],
-  [N,'Kami naik ke atap, tempat yang sekarang terasa seperti milik kami berdua. Langit jingga, angin sore, dan Teppi yang untuk sekali ini diam menunggu.'],
-  [F,'Teppi, ada yang ingin kuberikan.','s'],
-  [T,'Hadiah?! Aku tidak siap! Aku belum beli apa-apa!','o'],
-  [F,'Bukan hadiah. Ini catatan. Isinya hal-hal yang ingin kuceritakan ke seseorang. Selama ini aku tidak punya orangnya.','s'],
-  [N,'Dia membuka halaman pertama. Tulisan tanganku yang rapi: bintang paling terang di langit sore, fakta kupu-kupu, rumus yang kupikir indah, dan satu halaman penuh gambar kecil yang kubuat setelah melihat komiknya.'],
-  [T,'Firjan... ini banyak banget. Kamu menulis ini sejak kapan?','o'],
-  [F,'Sejak kelas sepuluh. Tapi halaman-halaman terakhirnya baru kutulis setelah kamu datang.','s'],
-  [N,'Di halaman terakhir hanya ada satu kalimat: “Untuk Teppi. Kamu orang pertama yang mau mendengar semuanya.”'],
-  [T,'Aku akan baca semuanya. Pelan-pelan. Sambil nanya-nanya. Boleh?','s'],
-  [F,'Boleh. Tanyakan semuanya.','h'],
-  [N,'Dia merogoh tasnya dan mengeluarkan sebuah buku kecil bersampul kuning. Di sampulnya tertulis dengan spidol: “Daftar Pertanyaan untuk Firjan”.'],
-  [T,'Aku mulai buat ini sejak hari pertama. Semua yang ingin kutanya, kucatat. Sudah ada tiga ratus dua belas pertanyaan.','l'],
-  [F,'Tiga ratus dua belas?!','o'],
-  [T,'Tapi baru lima puluh sembilan yang kamu jawab! Masih panjang!','m'],
-  [N,'Di sampul dalam bukunya tertempel dua strip foto stiker. Satu dari bazar buku, satu dari festival. Dia menyimpannya sejak hari itu.'],
-  [T,'Pertanyaan nomor tiga ratus tiga belas...','s'],
-  [F,'Ya?','n'],
-  [T,'Boleh aku jadi orang yang kamu ceritakan semuanya, sampai kapan pun?','s'],
-  [F,'Boleh. Tapi aku akan sering terbata-bata.','s'],
-  [T,'Aku akan sering memotong ceritamu dengan pertanyaan.','m'],
-  [F,'Kalau begitu kita cocok.','h'],
+  [N,'Sepulang ujian terakhir, aku membawa buku catatan kecil di tas. Isinya jawaban untuk semua yang tidak berani kutanyakan. Aku menulisnya malam-malam, dalam bentuk surat pendek, dan tidak pernah menjadi berani mengirimnya.'],
+  [N,'Kami naik ke atap. Langit jingga, angin sore, dan Teppi yang membawa sesuatu juga: buku kecil bersampul kuning.'],
+  [T,'Kamu duluan.','s'],
+  [F,'Tidak, kamu duluan.','n'],
+  [T,'Kita sama-sama saja. Satu, dua, tiga.','m'],
+  [N,'Kami menyodorkan buku masing-masing pada detik yang sama. Aku membuka buku kuning itu. Halaman pertama: “Daftar Hal yang Ingin Kutanyakan pada Firjan, tapi Tidak Berani.” Ada tiga ratus dua belas nomor.'],
+  [T,'Dan kamu?','s'],
+  [F,'Daftar Hal yang Ingin Kukatakan pada Teppi, tapi Tidak Berani. Isinya empat puluh sembilan.','s'],
+  [T,'Kamu cuma punya empat puluh sembilan?','o'],
+  [F,'Tiap nomor panjang.','m'],
+  [N,'Kami membaca bersamaan, tanpa bicara. Kali ini diamnya penuh. Di halaman terakhir bukuku, tertulis satu kalimat: “Aku suka kamu. Aku harap kamu suka aku, walau aku masih sering terbata.” Di halaman terakhir bukunya: “Pertanyaan nomor 313: boleh aku jadi pacarmu?”'],
+  [F,'Jawabannya iya.','h'],
+  [T,'Jawabanku juga iya.','h'],
+  [F,'Lho, aku kan belum bertanya.','o'],
+  [T,'Aku sudah bertanya. Kamu cuma terlambat tiga ratus dua belas nomor.','l'],
   [N,'Dua buku. Dua orang. Satu kursi di sebelah jendela yang tidak akan pernah kosong lagi.'],
   {end:'S'}
 ];
 
 const EB=[
   {bg:'kelas'},{stage:['F','T']},
-  [N,'Ujian akhir semester selesai. Rapor menunggu, libur menanti. Teppi tetap Teppi: ribut, ceria, penuh pertanyaan.'],
-  [T,'Firjan Firjan! Kenapa langit jadi kemerahan waktu senja? Terus kenapa pagi hari kadang juga merah?','o'],
-  [F,'Karena cahaya biru lebih mudah terpencar. Yang sampai ke mata kita tinggal merahnya.','n'],
-  [T,'Wah! Jelaskan lagi! Pelan-pelan! Pakai contoh!','o'],
-  [F,'Bayangkan bola-bola kecil yang...','n'],
-  [N,'Aku menjelaskan selama sepuluh menit tanpa tergagap sekali pun. Dia mendengarkan dengan dagu bertumpu di tangan, mata tidak lepas dariku.'],
-  [N,'Lalu aku sadar. Aku bicara panjang dengan seorang cewek. Dan aku tidak ingin berhenti.'],
-  [T,'Firjan, kamu tahu gak?','s'],
-  [F,'Tahu apa?','n'],
-  [T,'Kamu sekarang ngomongnya lancar banget. Kamu sadar tidak?','h'],
-  [F,'Sadar. Tapi cuma dengan kamu.','s'],
-  [T,'Hehe. Itu... aku anggap pujian.','s'],
-  [N,'Ada sesuatu di antara kami yang belum bernama. Kadang aku ingin menamainya. Tapi kadang aku cukup senang hanya dengan tahu bahwa seseorang menyisakan kursi untukku, dan aku menyisakan kursi untuknya.'],
-  [N,'Semester depan masih panjang. Dan aku masih punya banyak jawaban yang belum sempat kuceritakan.'],
+  [N,'Ujian akhir selesai. Rapor menunggu, libur menanti. Teppi sudah mulai ribut lagi padaku, walau kadang masih memotong kalimatnya sendiri di tengah.'],
+  [T,'Firjan, kenapa langit jadi kemerahan waktu senja? Eh, tidak jadi. Aku tahu jawabannya.','o'],
+  [F,'Kalau sudah tahu, kenapa tanya?','m'],
+  [T,'Karena aku suka mendengar kamu menjelaskan.','s'],
+  [N,'Kalimat itu keluar begitu saja, lalu dia menutup mulut dengan tangan. Kami berdua terdiam. Lalu tertawa.'],
+  [N,'Ada sesuatu di antara kami yang belum bernama. Aku sudah tidak takut pada kata-katanya. Tapi aku juga tidak buru-buru.'],
+  [N,'Mungkin ada hal yang lebih baik dibiarkan tumbuh pelan-pelan, seperti bunga di pot kecil di sebelah jendela. Semester depan masih panjang.'],
   {end:'B'}
 ];
 
 const EC=[
   {bg:'kelas'},{stage:['F','T']},
-  [N,'Ujian akhir semester selesai. Teppi tetap sebangku denganku, tetap bertanya, tetap bersemangat tentang segalanya.'],
-  [N,'Tapi ada jarak kecil yang entah bagaimana tidak kutemukan cara menyeberanginya.'],
-  [N,'Mungkin karena beberapa kesempatan lewat begitu saja: jawaban yang tidak kuberikan, ajakan yang tidak kusampaikan, kata-kata yang tersangkut di tenggorokan.'],
-  [T,'Firjan! Terima kasih ya sudah sabar mengajariku selama ini!','h'],
-  [F,'Sama-sama. Kamu juga... mengajariku banyak hal.','s'],
+  [N,'Ujian akhir semester selesai. Teppi tetap sebangku denganku, tetap ribut pada semua orang, dan tetap diam begitu aku menoleh.'],
+  [N,'Aku tidak berani memulai. Dia tidak berani memulai. Dua orang pintar, dan tidak ada yang bisa memecahkan masalah sesederhana itu.'],
+  [T,'Firjan! Terima kasih ya sudah mengajariku semester ini.','h'],
+  [F,'Sama-sama. Kamu juga banyak mengajariku.','n'],
   [T,'Aku? Mengajarimu apa?','o'],
-  [F,'Cara bicara. Dulu aku tidak bisa. Sekarang bisa, sedikit.','n'],
-  [T,'Oh! Berarti aku sukses misi menaklukkan kegugupan Firjan! Akhirnya!','l'],
-  [N,'Dia tertawa. Aku ikut tertawa. Kami masih teman sebangku. Masih saling bertanya dan menjawab.'],
-  [N,'Tapi yang berubah adalah aku. Aku bisa mengobrol dengan Nadia tanpa hang. Aku bisa membalas Raka dengan kalimat utuh. Aku bisa mengajak orang bicara duluan.'],
-  [N,'Mungkin cerita kami tidak jadi komik romantis. Tapi aku tidak menyesal. Beberapa orang datang untuk jadi alasan kita berubah.'],
+  [F,'Cara bicara. Dulu aku tidak bisa. Sekarang bisa, sedikit.','s'],
+  [N,'Dia tersenyum, lalu cepat-cepat mengalihkan pandangan. Aku hampir mengatakan sesuatu. Hampir. Bel berbunyi.'],
+  [N,'Mungkin cerita kami tidak jadi komik romantis. Tapi aku belajar sesuatu yang berharga: diam itu bisa berarti seribu hal, dan satu-satunya cara tahu artinya adalah bertanya.'],
   {bg:'kelas'},
   [N,'Di mejaku sudah menempel selembar post-it kuning.'],
-  {postit:'Terima kasih sudah jadi guru terbaik. Pertanyaan berikutnya: mau ikut lomba Fisika denganku semester depan? — Teppi'},
-  [F,'Mau.','h'],
-  [N,'Kursi di sebelah jendela masih milik kami berdua. Siapa tahu, semester depan, ceritanya akan berlanjut.'],
+  {postit:'Semester depan, ayo ikut lomba Fisika bareng. Aku akan berusaha tidak diam. (Aku akan berusaha.) — Teppi'},
+  [F,'Aku juga akan berusaha.','h'],
+  [N,'Kursi di sebelah jendela masih milik kami berdua. Mungkin semester depan, salah satu dari kami akan menjadi yang pertama.'],
   {end:'C'}
 ];
 
@@ -649,132 +630,162 @@ const chapters=[
 ]},
 
 /* ---------- BAB 4 ---------- */
-{label:'Bab 4',title:'Peringkat Dua',sub:'Selisih dua poin',nodes:[
-  {bg:'kelas'},{stage:['F','T']},
-  [B,'Seleksi olimpiade matematika tingkat sekolah sudah keluar. Yang mewakili sekolah ke tingkat kabupaten adalah Kak Dimas dari kelas dua belas.','n'],
-  [B,'Firjan, kamu peringkat dua. Selisih dua poin. Bagus sekali, Nak.','n'],
-  [N,'Dua poin. Aku menatap angka itu terlalu lama. Selama tiga bulan aku belajar seperti orang kesetanan, dan hasilnya: dua poin.'],
-  {bg:'kantin'},
-  [N,'Di kantin, aku tidak menyentuh makananku. Teppi datang membawa dua gelas teh manis, dan untuk pertama kalinya, dia duduk tanpa langsung bicara.'],
-  [T,'Firjan... kamu kok diam banget? Eh, biasanya kamu memang diam sih. Tapi hari ini diamnya beda.','b'],
-  {choice:{q:'Teppi menunggu, tanpa melempar tiga pertanyaan sekaligus. Itu pertama kalinya. Aku...',opts:[
-    {t:'Cerita jujur apa yang kurasakan',d:6,f:'buka',then:[
-      [F,'Aku... gagal lolos seleksi. Selisih dua poin.','n'],
-      [F,'Orang-orang bilang aku pintar. Tapi pintar itu gampang kalau sedang di atas. Aku tidak tahu harus jadi siapa kalau tidak jadi yang pertama.','b'],
-      [N,'Itu kalimat terpanjang tentang perasaan yang pernah kuucapkan. Suaraku sedikit bergetar. Teppi tidak menyela.'],
-      [T,'...Makasih sudah cerita. Aku tahu itu sulit buatmu.','s']
+{label:'Bab 4',title:'Dia Tiba-tiba Sepi',sub:'Ribut ke semua orang, kecuali padaku',nodes:[
+  {bg:'kelas'},{stage:['F']},
+  [N,'Senin pagi. Aku tiba lebih awal dan menyiapkan diri. Teppi pasti sudah punya sepuluh pertanyaan baru. Aku bahkan menyiapkan jawaban untuk tiga di antaranya.'],
+  [T,'NADIAAA! Kamu sudah baca cerpen yang kemarin?! Endingnya GILA!','l'],
+  [N,'Suara itu terdengar dari pintu kelas. Teppi masuk, melambai pada Raka, memuji jepit rambut Nadia, menyapa Bu Lina yang kebetulan lewat. Dia menyalakan seluruh kelas seperti lampu, satu per satu.'],
+  [N,'Lalu dia sampai di bangkunya. Di sebelahku.'],
+  {stage:['F','T']},
+  [T,'...Hai.','s'],
+  [F,'Hai. Pagi.','k'],
+  [T,'Pagi.','z'],
+  [N,'Dia duduk, membuka tas, mengeluarkan buku, dan menatap papan tulis yang masih kosong dengan sangat serius. Tidak ada pertanyaan. Tidak ada post-it. Tidak ada “Firjan Firjan!”'],
+  [N,'Satu menit. Lima menit. Kipas di langit-langit berputar. Aku mendengar napasku sendiri.'],
+  [N,'Beberapa meja di belakang, tawa Teppi pecah karena lelucon Raka. Tawa yang sama keras dan cerahnya seperti biasa. Hanya sepuluh langkah dariku, seperti ada dinding kaca di antara kursi kami.'],
+  [N,'Aku memutar ulang tiga hari terakhir: apa yang kukatakan? Apa yang kulewatkan? Apakah “kamu memang begitu ke semua orang?” waktu itu terdengar seperti tuduhan? Otakku menjalankan seratus skenario, dan di semuanya aku bersalah.'],
+  {choice:{q:'Teppi menggambar di pinggir bukunya dan tidak menoleh sama sekali. Aku...',opts:[
+    {t:'Bertanya langsung: “Teppi, kamu marah sama aku?”',d:1,f:'tanya',then:[
+      [F,'Teppi... kamu marah sama aku?','k'],
+      [T,'Eh?! Tidak! Bukan! Sama sekali bukan!','o'],
+      [F,'Tapi kamu...','k'],
+      [T,'Aku cuma... ngantuk. Iya. Ngantuk. Semalam begadang.','z'],
+      [N,'Dia menyembunyikan wajah di balik buku Fisika yang sengaja dibuka terbalik. Aku tidak percaya dia ngantuk. Aku juga tidak punya bukti dia berbohong.']
     ]},
-    {t:'Bilang “tidak apa-apa” sambil tersenyum',d:1,then:[
-      [F,'Tidak apa-apa. Cuma kurang tidur.','n'],
-      [T,'Oh... iya ya.','b'],
-      [N,'Dia mengangguk, tapi sorot matanya bilang dia tidak percaya. Dia tidak memaksa. Itu justru lebih mengganggu.']
+    {t:'Mengajak ngobrol soal pelajaran seperti biasa',d:3,f:'inisiatif',then:[
+      [F,'Soal nomor sembilan... kamu sudah selesai? Aku bisa jelaskan kalau mau.','k'],
+      [T,'Boleh... kalau tidak merepotkan.','s'],
+      [N,'Tidak merepotkan. Dia yang dulu tidak pernah menanyakan kata “merepotkan” sekali pun. Aku menjelaskan pelan-pelan. Dia mendengarkan, mengangguk, menulis.'],
+      [T,'Oh. Paham.','z'],
+      [N,'Hanya itu. Tidak ada pertanyaan. Tidak ada “kenapa begitu?” Orang yang sudah tahu jawabannya tidak perlu bertanya. Tapi Teppi bukan orang yang begitu.']
     ]},
-    {t:'Bilang jangan ikut campur',d:-4,then:[
-      [F,'Tidak usah dipikirkan. Itu bukan urusanmu.','n'],
-      [T,'Oh... maaf.','b'],
-      [N,'Aku membuat Teppi diam. Dan aku benci diriku sendiri.']
+    {t:'Menunggu dia yang mulai, seperti biasa',d:-2,f:'menunggu_dia',then:[
+      [N,'Aku menunggu. Dia menunggu. Aku tidak tahu dia menunggu apa. Dia tidak tahu aku menunggu apa.'],
+      [N,'Secara matematis, dua orang yang sama-sama menunggu yang lain bicara disebut deadlock. Aku baru tahu kalau deadlock bisa terdengar sebagai suara kipas yang menyebalkan.']
     ]}
   ]}},
-  {if:s=>s.flags.buka?[
-    [T,'Firjan, dengar ya. Kalau kamu peringkat satu terus, aku harus nanya ke siapa? Aku butuh kamu bukan karena peringkat. Aku butuh kamu karena cara kamu menjelaskan bikin aku ngerti.','n'],
-    [T,'Dan dua poin itu cuma dua poin. Bukan dua tahun. Kamu masih punya banyak waktu!','h'],
-    [N,'Dia mengatakannya dengan nada biasa, nada Teppi yang ribut dan penuh semangat. Tapi kali ini, kata-katanya terasa seperti selimut.']
-  ]:[
-    [T,'Aku tidak akan nanya-nanya dulu. Tapi kalau kamu mau cerita nanti, aku di sini.','s'],
-    [N,'Dia tersenyum, lebih pelan daripada biasanya.']
-  ]},
-  [N,'Sepulang sekolah, Teppi menarik tasku.'],
-  [T,'Firjan! Es krim! Di warung depan sekolah! Aku traktir! Tidak boleh menolak!','o'],
-  {choice:{q:'Es krim, hanya berdua.',opts:[
-    {t:'Ikut, dan cerita lebih banyak',d:6,then:[
-      [N,'Kami duduk di bangku plastik warung. Es krim cokelat untukku, es krim stroberi untuk Teppi yang sudah habis setengah sebelum dia selesai bicara.'],
-      [F,'Ayahku selalu tanya: peringkat berapa? Bukan: kamu senang tidak?','b'],
-      [T,'Wah... berat ya. Ayahku malah tanya: kamu ngomong sama berapa orang hari ini? Bukan peringkat berapa.','m'],
-      [F,'Itu... pertanyaan yang jauh lebih sulit.','o'],
-      [T,'Hahaha! Iya!','l']
+  {bg:'kantin'},{stage:['F']},
+  [R,'Lo berantem sama Teppi?','m'],
+  [F,'Tidak.','n'],
+  [R,'Dia bawel sama semua orang, termasuk gue yang cuma ngasih pinjam penghapus. Tapi sama lo dia kayak patung. Itu aneh.','o'],
+  [D,'Mungkin dia butuh ruang.','n'],
+  [R,'Atau dia sebel sama lo.','m'],
+  [D,'Raka. Diam.','m'],
+  [N,'Nadia menendang kaki Raka di bawah meja dengan tenang. Aku menangkap sesuatu di wajahnya: bukan khawatir, tapi seperti orang yang menyimpan jawaban soal ujian dan sedang berjuang menahan diri untuk tidak memberitahu.'],
+  [F,'Nad, kamu tahu sesuatu?','k'],
+  [D,'Aku tahu banyak hal. Tapi tidak semuanya boleh kuceritakan. Itu urusan Teppi.','n'],
+  [N,'Jawaban yang tidak menjawab apa-apa.'],
+  {bg:'kelas'},{stage:['F']},
+  [N,'Waktu kembali ke kelas, ada lipatan kertas kecil di laciku. Tulisan yang sama: kotak-kotak, tegak, rapi.'],
+  {postit:'Orang yang tiba-tiba diam belum tentu tidak peduli. Kadang diamnya yang paling berisik. — Seseorang yang pernah menunduk juga',from:'Catatan tanpa nama, yang kedua'},
+  [N,'Siapa pun penulisnya, dia tahu sesuatu yang tidak kuketahui. Atau dia menebak, dan tebakannya sangat bagus.'],
+  {bg:'gerbang'},{stage:['F','T']},
+  [N,'Sepulang sekolah, aku melihat Teppi sendirian di dekat gerbang, menunggu angkot. Dia tidak melihatku. Bahunya sedikit turun, seperti orang yang sedang menahan sesuatu.'],
+  {choice:{q:'Ini kesempatan. Dan aku punya lima detik untuk memutuskan. Aku...',opts:[
+    {t:'Menyapa dan menawarkan teh manis, tebusan janjinya',d:3,f:'inisiatif',then:[
+      [F,'Teppi.','k'],
+      [T,'Firjan?! Eh... hai.','o'],
+      [F,'Kamu... dulu bilang mau traktir teh manis. Aku... tebus duluan.','k'],
+      [N,'Aku menyodorkan gelas plastik yang tadi kubeli di warung Bu Eni. Dia menatap gelas itu seolah itu bukan teh, tapi hadiah negara.'],
+      [T,'Kenapa kamu... bukannya aku yang janji?','s'],
+      [F,'Janji kan bisa dicicil.','n'],
+      [T,'...Hehe.','s'],
+      [N,'Tawa kecil. Pendek. Tapi nyata. Itu tawa pertama untukku sejak Senin.']
     ]},
-    {t:'Ikut, tapi lebih banyak diam',d:3,then:[
-      [N,'Kami makan es krim dalam diam. Biasanya Teppi yang bicara. Kali ini dia membiarkan hening sebentar, lalu bercerita tentang kucing tetangganya yang takut kardus kosong.'],
-      [N,'Aku tidak bicara, tapi aku mendengarkan. Dan sepertinya itu cukup.']
+    {t:'Mengikuti dari jauh, bersembunyi di balik tiang',d:-2,then:[
+      [N,'Aku tidak tahu kenapa aku memilih bersembunyi di balik tiang listrik. Jawabannya: otakku sedang offline.'],
+      [S,'Anak muda, itu tiang listrik, bukan pohon. Kamu tidak akan mendapat teduh dari situ.','m'],
+      [F,'Pak... tolong... jangan keras-keras.','k'],
+      [N,'Teppi menoleh. Aku merunduk. Dia mengerutkan dahi, lalu naik angkot. Aku berdiri di balik tiang dengan seluruh harga diriku berserakan di trotoar.']
     ]},
-    {t:'Menolak, pulang sendiri',d:-3,then:[
-      [F,'Maaf. Aku mau pulang.','n'],
-      [T,'Oke! Hati-hati ya!','h'],
-      [N,'Dia tersenyum seperti biasa, tapi ada jeda setengah detik sebelum senyum itu muncul. Aku menyadarinya terlalu terlambat.']
+    {t:'Pura-pura tidak melihat dan pulang',d:-3,then:[
+      [N,'Aku berbelok ke arah berlawanan. Alasan yang kukatakan pada diri sendiri: dia butuh ruang. Alasan sebenarnya: aku takut.'],
+      [N,'Di belokan, aku menoleh. Teppi masih berdiri di sana, memandang ke arahku. Dia cepat-cepat berbalik begitu mata kami hampir bertemu.']
     ]}
   ]}},
-  [N,'Malam itu aku menatap langit-langit kamar dan berpikir: kapan terakhir kali seseorang menyadari aku sedang tidak baik-baik saja?']
+  [N,'Malam itu aku mengetik pesan untuk Teppi. Sebelas kali. Isinya: “Besok ada PR Fisika?” Sebelas kali kuhapus. Yang kedua belas akhirnya terkirim.'],
+  [N,'Balasannya datang tiga menit kemudian. “Ada. Halaman 87.” Lalu, satu menit kemudian: “Terima kasih sudah nanya, Firjan.”'],
+  [N,'Aku membaca kalimat itu dua puluh kali. Terima kasih sudah nanya. Seolah itu hal yang jarang dilakukan orang. Seolah aku baru saja melakukan sesuatu yang besar.']
 ]},
 
 /* ---------- BAB 5 ---------- */
-{label:'Bab 5',title:'Hujan di Halte',sub:'Payung biru dan buku catatan',nodes:[
+{label:'Bab 5',title:'Hujan di Halte',sub:'Satu payung, dua orang yang tidak bicara',nodes:[
   {bg:'hujan'},{stage:['F','T']},
-  [N,'Sehari kemudian, sepulang sekolah, hujan turun deras sekali. Teppi berdiri di depan kelas dengan wajah cemberut.'],
-  [T,'Aku lupa bawa payung! Padahal ramalan cuaca bilang hujan! Aku tidak percaya ramalan cuaca, dan sekarang aku dihukum!','o'],
-  {choice:{q:'Aku punya payung lipat biru di tas. Aku...',opts:[
-    {t:'Tawarkan jalan bareng sampai halte',d:6,then:[
-      [F,'A-aku bawa payung. Kecil sih. Kalau mau... kita ke halte. Bareng.','s'],
-      [T,'Beneran?! Kamu penyelamat!','h'],
-      [N,'Aku membuka payung biru lipat itu. Dia berdiri sangat dekat di sebelahku. Aku memegang payung dengan tangan kaku seperti memegang bom waktu.']
+  [N,'Kamis sore. Hujan turun deras sekali, tepat saat bel pulang. Teppi berdiri di depan kelas memandangi langit, dan untuk pertama kalinya dalam seminggu, dia sendirian.'],
+  [N,'Aku punya payung biru lipat di tas. Aku menatapnya. Payung itu menatapku balik.'],
+  [F,'Teppi, kamu... bawa payung?','k'],
+  [T,'Tidak. Tapi tidak apa-apa. Aku bisa menunggu.','z'],
+  [N,'Aku tahu “tidak apa-apa” itu bukan jawaban jujur. Atau memang jujur? Aku tidak bisa membaca ekspresinya lagi.'],
+  {choice:{q:'Dia menolak, tapi suaranya kecil dan matanya tidak menatapku. Aku...',opts:[
+    {t:'Menawarkan sekali lagi dengan tenang: “Aku tidak keberatan.”',d:5,f:'payung',then:[
+      [F,'Aku tidak keberatan. Sungguh. Halte tidak jauh.','n'],
+      [T,'...Kamu yakin?','s'],
+      [F,'Yakin.','n'],
+      [T,'Baiklah. Terima kasih.','s']
     ]},
-    {t:'Kasih payungnya, aku lari saja',d:3,then:[
-      [F,'Nih. Pakai. Aku lari.','n'],
-      [T,'Jangan! Kamu bisa sakit! Kita pakai berdua!','o'],
-      [F,'Ta-tapi...','s'],
-      [T,'Tidak ada tapi-tapian!','m']
+    {t:'Menaruh payung di mejanya dan hujan-hujanan',d:3,f:'rela',then:[
+      [F,'Pakai ini. Aku... tidak apa-apa.','k'],
+      [T,'Firjan?! Tunggu! Kamu bisa sakit!','o'],
+      [N,'Dia menyusulku di lorong dengan payung terbuka, menaunginya di atas kepalaku, dan baru sadar dia berbicara lebih dari lima kata tanpa putus.'],
+      [T,'Maaf. Aku... maksudku, kita bareng saja. Ya?','s']
     ]},
-    {t:'Bilang sebentar lagi reda, lalu pergi',d:-3,then:[
-      [F,'Sebentar lagi pasti reda. Aku duluan.','n'],
-      [N,'Aku berjalan lima langkah, lalu berhenti. Di belakangku, Teppi masih berdiri memandangi hujan. Aku berbalik.'],
-      [F,'Teppi! Ayo! Aku... mengantarmu sampai halte.','b'],
-      [T,'Katanya duluan?','m'],
-      [F,'Aku... berubah pikiran.','s']
+    {t:'Mengangguk, “oke”, dan pulang duluan',d:-4,then:[
+      [F,'Oke. Hati-hati.','n'],
+      [N,'Aku berjalan menjauh dengan payung terbuka. Di belokan, aku menoleh. Teppi masih berdiri di depan kelas, kecil dan sendirian, memeluk tasnya.'],
+      [N,'Aku langsung berbalik. Aku selalu menganggap kata “tidak apa-apa” sebagai kebenaran. Hari ini aku belajar bahwa kadang itu undangan yang disamarkan.'],
+      [F,'Maaf. Aku salah paham. Ayo, bareng.','k'],
+      [T,'...Iya.','s']
     ]}
   ]}},
-  [N,'Halte kecil di depan sekolah. Bunyi hujan di atap seng terdengar seperti tepuk tangan yang tidak selesai-selesai.'],
-  [N,'Teppi duduk di sebelahku. Biasanya dia bicara tanpa jeda. Kali ini dia diam menatap hujan. Diamnya terasa aneh, tapi tidak canggung.'],
-  [F,'Kamu... tidak bicara.','n'],
-  [T,'Aku sedang mendengarkan hujan. Hujan juga punya cerita, kan?','s'],
-  [T,'Tahu gak, aku bicara banyak karena dulu aku pindah-pindah sekolah terus. Kalau diam, orang tidak kenal aku. Jadi aku belajar bicara duluan.','n'],
-  [F,'Itu... masuk akal.','n'],
-  [T,'Dan kamu orang pertama yang menjawab pertanyaanku sampai habis. Tidak pernah bilang “kamu berisik”.','h'],
-  [N,'Aku tertegun. Dia pikir dirinya berisik. Padahal aku baru sadar, kelas terasa lebih hidup sejak dia datang.'],
-  {choice:{q:'Entah dari mana datangnya, aku ingin menceritakan sesuatu yang belum pernah kuceritakan ke siapa pun.',opts:[
-    {t:'Cerita tentang buku catatan kecilku',d:6,f:'catatan',then:[
-      [F,'A-aku punya buku catatan kecil. Isinya hal-hal yang ingin kuceritakan ke seseorang. Fakta bintang, rumus yang kupikir indah, hal lucu di kelas.','s'],
-      [F,'Tapi sampai sekarang tidak pernah ada yang kuceritakan. Aku tidak tahu harus cerita ke siapa.','b'],
-      [T,'Wah... itu keren banget. Itu kayak buku harian untuk orang yang belum ketemu orangnya.','o'],
-      [T,'Sekarang kamu sudah ketemu, kan? Ceritakan ke aku. Aku akan jadi pendengar yang berisik tapi setia.','h'],
-      [N,'Aku tertawa. Tertawa lepas, entah sejak kapan terakhir kali.']
+  [N,'Kami berjalan di bawah satu payung kecil. Jarak antara bahu kami: dua puluh sentimeter. Aku mengukurnya dengan mata dan menyesal sudah menghitungnya.'],
+  [N,'Suara hujan di atas payung terdengar seperti tepuk tangan yang tidak selesai-selesai. Tidak ada yang bicara. Aku menggeser payung sedikit ke arahnya tanpa sadar.'],
+  [T,'Bahumu basah.','b'],
+  [F,'Tidak apa-apa.','n'],
+  [T,'...Maaf.','z'],
+  [F,'Untuk apa?','k'],
+  [T,'Semuanya.','b'],
+  [N,'Satu kata. Semuanya. Aku tidak punya lampiran untuk mengurai maksudnya.'],
+  [N,'Kami tiba di halte. Hujan makin deras. Kami duduk di bangku besi yang dingin, berjarak satu lengan.'],
+  [T,'Firjan, boleh nanya?','s'],
+  [N,'Pertanyaan pertama dalam seminggu. Hatiku melompat seperti anak anjing.'],
+  [F,'Bo-boleh.','k'],
+  [T,'Kalau ada seseorang yang... biasanya aku bisa bicara apa saja padanya, tapi tiba-tiba lidahku nyangkut tiap dia ada di dekatku... itu salahnya siapa?','b'],
+  [N,'Seseorang. Bukan “kamu”. Seseorang. Dadaku berubah seperti ruang kosong yang digema.'],
+  {choice:{q:'Jantungku mencoba memberiku petunjuk. Aku...',opts:[
+    {t:'Bilang: “Tanyakan saja. Aku tidak akan menertawakan.”',d:5,f:'dengar',then:[
+      [F,'Kamu bisa cerita. Aku tidak akan menertawakan. Aku... pernah ada di posisi itu.','n'],
+      [T,'Benarkah?','s'],
+      [F,'Hampir tiap hari sebelum kamu datang.','m'],
+      [T,'...Hehe.','s'],
+      [F,'Menurutku tidak ada yang salah. Mungkin lidahnya cuma sedang berpikir-pikir.','n'],
+      [T,'Itu... jawaban yang bagus.','s'],
+      [N,'Dia menatapku sebentar, lalu cepat-cepat menatap hujan. Telinganya merah. Atau itu pantulan lampu halte. Aku tidak tahu lagi.']
     ]},
-    {t:'Cerita hal ringan saja, soal bintang',d:3,then:[
-      [F,'Kamu tahu, kalau hujan reda, kadang langit malam lebih bersih. Bintangnya kelihatan lebih banyak.','n'],
-      [T,'Beneran? Ajari aku cari bintang!','o'],
-      [F,'Nan-nanti ya.','s'],
-      [N,'Aku bercerita tentang bintang, tapi menyimpan yang lebih penting di dalam. Mungkin belum waktunya.']
+    {t:'Bercanda: “Lidah itu bukan benda, jadi tidak bisa nyangkut.”',d:2,then:[
+      [F,'Secara anatomi, lidah tidak bisa nyangkut. Kecuali kalau di pagar.','m'],
+      [T,'Hahaha! Firjan! Aku serius!','l'],
+      [F,'Maaf. Aku... melucu karena gugup.','k'],
+      [T,'Tidak apa-apa. Aku justru butuh itu.','s'],
+      [N,'Dia tertawa. Tapi pertanyaannya tidak terjawab. Mungkin itu memang tujuannya.']
     ]},
-    {t:'Bilang “bukan apa-apa”',d:-3,then:[
-      [F,'Bukan apa-apa.','n'],
-      [T,'Oh, oke!','h'],
-      [N,'Aku hampir mengucapkan sesuatu yang penting, tapi mulutku menutup sendiri seperti pintu kulkas.']
+    {t:'Diam dan menunggu dia melanjutkan',d:1,then:[
+      [N,'Aku menunggu. Dia menunggu. Hujan mengisi sunyi di antara kami.'],
+      [T,'...Tidak jadi. Lupakan saja.','z'],
+      [F,'Oh. Oke.','k'],
+      [N,'Aku membiarkan pertanyaan itu menguap bersama uap hujan. Aku menyesalinya dua detik kemudian.']
     ]}
   ]}},
-  [N,'Hujan perlahan reda. Angkot jurusan rumah Teppi datang dari ujung jalan, lampunya menyala kuning di antara genangan.'],
-  {if:s=>s.love>=22?[
-    [T,'Firjan, kamu tahu gak? Kamu itu diam-diam keren, loh.','s'],
-    [F,'A-aku?','o'],
-    [T,'Iya! Orang yang menjelaskan dengan pelan, mendengarkan sampai habis, dan bawa payung cadangan. Itu keren!','h'],
-    [N,'Angkot itu berangkat. Aku berdiri di halte memegang payung biru yang basah, dengan wajah merah sampai ke telinga. Untung masih gerimis, jadi tidak ada yang melihat.']
-  ]:[
-    [T,'Terima kasih sudah mengantarku, Firjan.','n'],
-    [F,'Sama-sama.','n'],
-    [N,'Angkot itu berangkat. Aku berdiri di halte, merasa ada kalimat yang seharusnya kuucapkan, tapi tidak tahu apa.']
-  ]},
+  [N,'Angkot jurusan rumah Teppi datang dari ujung jalan, lampunya menyala kuning di antara genangan.'],
+  [T,'Terima kasih sudah mengantarku. Dan... aku benar-benar minta maaf soal minggu ini.','s'],
+  [F,'Tidak apa-apa. Aku mengerti.','n'],
+  [N,'Aku tidak mengerti sama sekali. Tapi itu kalimat yang paling aman.'],
+  [N,'Angkot itu berangkat. Aku berdiri di halte memegang payung biru yang basah, dan merasa ada separuh percakapan yang tertinggal di bangku besi.'],
   {rand:[
     [
-      [N,'Sendirian di halte, aku baru sadar ada yang janggal. Bu Eni dari warung seberang melambai sambil membawa gelas plastik berasap.'],
-      [K,'Nak Firjan! Ini teh manis panas. Sudah dibayar. Katanya titipan dari anak perempuan berjepit kuning. Dia bilang jangan ditolak.','h'],
-      [N,'Teh itu manisnya keterlaluan. Tapi di tutup gelasnya ada gambar kecil: dua payung bersebelahan, satu biru, satu kuning. Aku menyimpan tutup gelas itu di saku seperti harta karun.']
+      [N,'Seorang ibu menghampiri halte sambil membawa gelas plastik berasap. Bu Eni dari warung seberang.'],
+      [K,'Nak Firjan! Ini teh manis panas. Sudah dibayar. Titipan dari anak perempuan berjepit kuning. Katanya jangan sampai ditolak.','h'],
+      [N,'Teh itu manisnya keterlaluan. Tapi di tutup gelasnya ada gambar kecil: dua payung berdampingan, satu biru, satu kuning.'],
+      [N,'Dia mengaku tidak bisa bicara padaku, tapi dia menitipkan teh. Dia menolak payungku, tapi menggambar payung bersebelahan. Aku tidak bisa memecahkan pola ini. Padahal aku juara paralel.']
     ],
     [
       {stage:['F']},
@@ -797,129 +808,128 @@ const chapters=[
     ],
     [
       {stage:['F']},
-      [N,'Seorang bapak berseragam menghampiri halte sambil membawa payung hitam besar. Pak Joko, satpam sekolah.'],
+      [N,'Seorang bapak berseragam menghampiri halte membawa payung hitam besar. Pak Joko, satpam sekolah.'],
       [S,'Anak muda, belum pulang? Hujan itu alasan sah buat berteduh bareng orang yang kamu suka. Bapak dulu begitu sama istri Bapak.','h'],
       [F,'Eh, Pak! B-bukan begitu!','o'],
       [S,'Bapak tidak bilang kamu sedang begitu. Bapak bilang Bapak dulu begitu.','m'],
       [N,'Pak Joko pergi sambil bersiul. Aku berdiri di halte dengan wajah panas, dan kali ini hujan sama sekali tidak membantu mendinginkannya.']
     ]
-  ]}
+  ]},
+  [N,'Waktu hendak pulang, aku menemukan sesuatu di bangku besi tempat Teppi duduk: selembar halaman buku sketsa, terlipat dua, dengan satu sisi sobek tidak rata. Tulisan bulat miring, penuh tanda seru yang dicoret.'],
+  {choice:{q:'Halaman itu pasti milik Teppi. Isinya tertulis dalam bentuk catatan harian. Aku...',opts:[
+    {t:'Mengembalikan besok tanpa membacanya',d:4,f:'hormat',then:[
+      [N,'Aku melipatnya lagi, tanpa membuka. Aku mengingatkan diri sendiri: sesuatu yang penting bagi seseorang bukan hakku untuk dibaca.'],
+      [N,'Keesokan harinya aku menyerahkan halaman itu di bangkunya.'],
+      [T,'Ini... kamu baca?','o'],
+      [F,'Tidak. Aku tidak membukanya sama sekali.','n'],
+      [N,'Dia menatapku lama. Matanya melunak, dan sesuatu di wajahnya yang tegang seminggu penuh akhirnya mengendur.'],
+      [T,'Terima kasih, Firjan. Sungguh.','s']
+    ]},
+    {t:'Membaca sekilas, hanya beberapa baris',d:-1,f:'baca',then:[
+      {postit:'...tiap dia tersenyum, kepalaku kosong. Padahal aku punya sembilan pertanyaan. Mungkin lebih baik aku (sobek) ...supaya dia tidak tahu kalau aku (sobek) ...kayaknya dia tidak suka orang yang terlalu berisik.',from:'Halaman yang tertinggal di halte'},
+      [N,'Aku membaca ulang tiga kali. “Dia”. Siapa “dia”? Dimas? Raka? Aku? Kalau aku, kenapa dia bilang tidak suka orang yang berisik, padahal aku tidak pernah bilang begitu?'],
+      [N,'Keesokan harinya aku mengembalikannya. Teppi mengambilnya tanpa menatapku dan berkata “terima kasih” dengan suara sangat pelan.']
+    ]},
+    {t:'Membaca sampai habis, memotret, dan menyimpan fotonya',d:-3,f:'baca',then:[
+      {postit:'...tiap dia tersenyum, kepalaku kosong. Padahal aku punya sembilan pertanyaan. Mungkin lebih baik aku (sobek) ...supaya dia tidak tahu kalau aku (sobek) ...kayaknya dia tidak suka orang yang terlalu berisik.',from:'Halaman yang tertinggal di halte'},
+      [N,'Aku memotretnya karena ingin menganalisisnya nanti, seperti soal. Tapi ada sesuatu yang terasa salah di balik niat itu.'],
+      [N,'Malam itu aku menatap foto halaman itu selama satu jam, membuat teori yang saling bertabrakan. Paginya aku merasa seperti pencuri yang tidak mencuri apa pun, tapi tetap berdosa.']
+    ]}
+  ]}}
 ]},
 
 /* ---------- BAB 6 ---------- */
-{label:'Bab 6',title:'Sabtu di Bazar Buku',sub:'Kali ini, Firjan yang memulai',nodes:[
-  {bg:'kamar'},{stage:['F']},
-  [N,'Sudah dua minggu sejak Teppi pindah. Setiap hari, dialah yang memulai: mengajak bicara, mengirim pesan, menempel post-it. Aku selalu yang menjawab.'],
-  [N,'Sabtu malam itu, aku menatap layar HP dan berpikir: sekali ini saja, aku yang mulai. Aku mengetik pesan. Menghapusnya. Mengetik lagi. Menghapus lagi. Total: sebelas kali.'],
-  {choice:{q:'Akhirnya, aku mengirim...',opts:[
-    {t:'Ajak langsung ke bazar buku besok',d:5,then:[
-      [F,'Teppi, besok ada bazar buku bekas di alun-alun. Kamu mau ikut? Aku... ingin mengajak.','s'],
-      [N,'Terkirim. Jantungku berdetak seperti drum band. Balasan datang tiga detik kemudian.'],
-      {postit:'MAU BANGET!!! JAM BERAPA?!! AKU BAWA TOTE BAG BESAR!!! (Kamu mengajakku duluan!! Aku catat di buku harian!!)',from:'Pesan dari Teppi'}
+{label:'Bab 6',title:'Kursi yang Hampir Pindah',sub:'Kabar burung dan balasan di atas kertas kecil',nodes:[
+  {bg:'kelas'},{stage:['F','T']},
+  [R,'Gue dengar kabar. Teppi lagi suka sama seseorang.','m'],
+  [T,'RAKA!','o'],
+  [N,'Pulpen melayang dan mendarat tepat di kening Raka. Dia mengaduh dramatis dan jatuh dari kursi.'],
+  [R,'Gue cuma berita bro! Jurnalis tidak boleh disensor!','l'],
+  [D,'Gosip bukan berita, Raka.','m'],
+  [F,'Si... siapa?','k'],
+  [R,'Rahasia! Itu bagian dari kontrak jurnalistik!','m'],
+  [N,'Teppi menunduk dan menyibukkan diri dengan sesuatu yang bukan apa-apa. Telinganya merah sampai ke leher. Dia tidak melihat ke arahku sedetik pun.'],
+  [N,'Seseorang. Itu kata yang sama dengan di halte. Siapa pun dia, dia orang yang beruntung dan aku tidak ingin menyukainya.'],
+  [N,'Jam pelajaran Bu Sari. Teppi mengangkat tangan.'],
+  [T,'Bu, boleh pindah tempat duduk?','s'],
+  [B,'Pindah? Kenapa?','o'],
+  [T,'Silau. Dari jendela.','z'],
+  [B,'Kamu duduk di sebelah jendela yang pakai tirai. Silau dari mana?','m'],
+  [T,'Dari... sisi lain.','b'],
+  [B,'Tidak ada pindah tempat duduk sebelum ujian. Titik.','n'],
+  [N,'Teppi duduk kembali. Aku merasa seperti baru ditampar dengan kata “silau” yang sebenarnya tidak ada.'],
+  {choice:{q:'Dia ingin pindah dariku. Aku tidak tahu kenapa. Aku...',opts:[
+    {t:'Menawarkan diri yang pindah: “Bu, saya saja.”',d:3,f:'rela',then:[
+      [F,'Bu, kalau Teppi tidak nyaman, saya saja yang pindah.','n'],
+      [T,'JANGAN!','o'],
+      [N,'Seluruh kelas menoleh. Teppi menutup mulut dengan kedua tangan.'],
+      [T,'Maksudku... tidak usah. Aku... baik-baik saja di sini. Silaunya... sudah hilang.','b'],
+      [B,'Kalian ini kenapa sih. Duduk. Dua-duanya.','m'],
+      [N,'Aku duduk, bingung. Tadi dia ingin pindah. Sekarang dia berteriak “JANGAN”. Aku butuh buku panduan.']
     ]},
-    {t:'Pura-pura tanya soal PR dulu, baru ajak',d:2,then:[
-      [F,'Teppi, nomor lima sudah dikerjakan? Oh iya, besok ada bazar buku. Kalau mau.','n'],
-      [N,'Aku menyelipkan ajakan di balik pertanyaan PR seperti menyelundupkan hadiah di dalam kardus.'],
-      {postit:'PR sudah! Dan YA aku mau!! Kamu menyelipkan ajakan di balik PR ya?? Aku tahu triknya!',from:'Pesan dari Teppi'}
+    {t:'Pura-pura membaca dan tidak bereaksi',d:-2,then:[
+      [N,'Aku membaca buku Fisika yang bahkan bukan pelajaran jam ini. Halaman 214 terasa seperti mata uang yang tidak laku.'],
+      [N,'Sepanjang jam, Teppi tidak melirikku. Aku tidak melirik dia. Dua orang paling pintar di kelas, sama-sama sibuk menghindari satu sama lain.']
     ]},
-    {t:'Hapus semuanya, tidak jadi kirim',d:-3,then:[
-      [N,'Aku menghapus semuanya dan menaruh HP di meja. Lima menit kemudian HP-ku bergetar.'],
-      {postit:'Firjan!! Besok ke bazar buku di alun-alun yuk?? Aku mau cari komik bekas! Kamu temani ya? Kamu kan tahu banyak buku!',from:'Pesan dari Teppi'},
-      [N,'Dia mengajakku lebih dulu. Seperti biasa. Aku tersenyum, sekaligus malu pada diri sendiri. Lain kali, aku yang harus mulai.'],
-      [F,'Iya, mau. Jam berapa?','s']
+    {t:'Menyelipkan catatan kecil di bukunya',d:4,f:'surat',then:[
+      [N,'Aku merobek ujung kertas dan menulis dengan huruf tegak yang sengaja dibuat rapi: “Kalau aku mengganggu, bilang saja. Aku tidak akan tersinggung. — F.”'],
+      [N,'Aku menyelipkannya di antara halaman bukunya saat dia ke kamar kecil. Jantungku berdetak seperti mesin giling.'],
+      [N,'Sepulang sekolah, di mejaku sudah ada selembar balasan. Tulisan bulat dan miring, dengan satu kalimat yang dicoret berkali-kali.'],
+      {postit:'Kamu tidak mengganggu. Aku yang... (dicoret) ...Aku yang tidak tahu cara bersikap normal. Maaf. — T.',from:'Balasan dari Teppi'},
+      [N,'Aku membacanya sepuluh kali. Dia tidak bisa bicara denganku. Tapi dia bisa menulis kepadaku. Itu saja sudah terasa seperti pintu yang terbuka satu sentimeter.']
     ]}
   ]}},
   {bg:'pasar'},{stage:['F','T']},
-  [N,'Bazar buku di alun-alun. Tenda-tenda terpal berjejer, tumpukan buku bekas menjulang seperti gunung kardus. Wangi kertas tua dan gorengan bercampur jadi satu.'],
-  [T,'Wah! Banyak banget! Firjan, ini ada komik lama! Ini ada kamus tebal! Ini ada buku fisika! Kamu mau lihat yang fisika? Aku tahu kamu mau!','o'],
-  [F,'Aku... boleh lihat.','s'],
-  [N,'Teppi menarik lengan bajuku (hanya lengan baju, bukan tangan, aku bersyukur) dan menyeretku ke lapak buku sains. Dalam lima menit aku menemukan buku tentang bintang yang sudah lama kuinginkan.'],
-  [T,'Firjan, tolong! Aku bingung! Novel misteri atau buku sains populer? Kamu yang pilih!','o'],
-  {choice:{q:'Teppi memegang dua buku dan menatapku penuh harap.',opts:[
-    {t:'Rekomendasikan sains populer dan jelaskan alasannya',d:5,then:[
-      [F,'Ambil yang sains. Buku itu menjelaskan hal rumit lewat cerita. Mirip caramu menjelaskan sesuatu: banyak tanya, banyak semangat.','n'],
-      [T,'Caraku... menjelaskan? Wah, aku belum pernah dengar itu!','o'],
-      [N,'Aku mengatakannya tanpa tergagap. Aku sendiri kaget.']
+  [N,'Sabtu. Nadia dan Raka, dengan alasan “tugas kelas”, menugaskan aku dan Teppi menjaga stan donasi buku di bazar alun-alun. Aku curiga ini konspirasi. Nadia memandangku dengan wajah polos berlebihan.'],
+  [N,'Kami menyusun buku berdampingan. Tidak ada percakapan. Hanya bunyi buku yang diletakkan, dan suara penjual es dawet di kejauhan.'],
+  [N,'Tangan kami bergerak bersamaan ke arah satu buku: kumpulan komik sains yang sampulnya sudah usang. Jari kami hampir bersentuhan.'],
+  [T,'Eh... kamu mau?','s'],
+  [F,'Kamu duluan.','k'],
+  [T,'Tidak, kamu saja.','s'],
+  [N,'Kami terdiam. Dua orang saling mempersilakan satu buku murah. Lalu, tanpa kusadari, aku tertawa kecil.'],
+  [N,'Dan Teppi ikut tertawa. Tawa yang lepas, yang bukan tawa pada Raka atau Nadia, tapi tawa yang kukenal dari minggu pertama.'],
+  {choice:{q:'Untuk pertama kalinya dalam dua minggu, dia tertawa karena aku. Aku...',opts:[
+    {t:'Membelikan buku itu untuknya, diam-diam',d:4,f:'inisiatif',then:[
+      [N,'Saat dia sibuk dengan pembeli, aku membayar buku itu dan memasukkannya ke tas bekalnya. Aku menempelkan catatan kecil: “Supaya kamu punya sesuatu untuk ditanyakan lagi. — F.”'],
+      [N,'Aku tidak tahu kapan dia menemukannya. Tapi sore itu, dia menatapku sebentar dengan wajah yang tidak bisa kubaca. Bukan marah. Bukan senang. Seperti seseorang yang hampir menangis.']
     ]},
-    {t:'Ambil dua-duanya, aku bayar separuh',d:3,then:[
-      [F,'Ambil dua-duanya. Aku bayar yang sains. Hadiah... karena kamu terus bertanya dan membuatku belajar.','s'],
-      [T,'Hah?! Kamu belajar dari pertanyaanku?','o'],
-      [F,'Pertanyaan bagus membuatku berpikir lebih keras.','n']
+    {t:'Bertanya: “Mau cerita soal seseorang yang dibilang Raka?”',d:-2,then:[
+      [F,'Teppi, soal seseorang yang suka... itu siapa?','k'],
+      [N,'Tawanya langsung padam seperti lampu dimatikan.'],
+      [T,'Itu... bukan apa-apa. Raka cuma bercanda.','z'],
+      [N,'Aku tahu aku salah memilih waktu. Pertanyaannya terlalu cepat, terlalu telanjang. Dia kembali memandang buku-buku, dan suasana di antara kami menjadi sunyi yang lebih dingin dari sebelumnya.']
     ]},
-    {t:'Bilang terserah, aku tidak tahu',d:1,then:[
-      [F,'Terserah. Aku tidak tahu.','n'],
-      [T,'Kamu tahu! Kamu tahu banyak! Tapi baiklah, aku ambil dua-duanya!','m']
+    {t:'Memanfaatkan momen: ceritakan satu hal tentang diriku',d:3,f:'terbuka',then:[
+      [F,'Aku dulu mengira diam itu aman. Karena kalau tidak bicara, tidak bisa salah. Tapi sejak kamu datang, aku jadi sering merasa... diamku tidak cukup lagi.','n'],
+      [T,'...','s'],
+      [T,'Aku juga.','s'],
+      [N,'Dua kata. Hanya dua kata. Tapi aku mendengarnya seperti baru mendengar bahasa baru yang kupahami sepenuhnya.']
     ]}
   ]}},
-  [N,'Di ujung bazar ada mesin foto stiker tua dengan tirai merah. Teppi berhenti di depannya, menatapnya sedikit terlalu lama.'],
-  [T,'Aku suka mengumpulkan foto stiker! Di Banjarmasin aku punya satu album penuh. Di sini belum ada satu pun!','o'],
-  {choice:{q:'Mesin foto itu menunggu. Aku...',opts:[
-    {t:'Ajak masuk dan pasang pose paling konyol',d:4,f:'foto',then:[
-      [F,'Ayo... masuk. Album barumu harus dimulai dari yang paling heboh.','s'],
-      [N,'Foto pertama: aku kaku seperti papan tulis. Foto kedua: Teppi menarik pipiku, aku terlalu kaget untuk melawan. Foto ketiga: kami tertawa terlalu keras sampai blur.'],
-      [T,'Foto ketiganya jelek banget. Aku suka.','l']
-    ]},
-    {t:'Ajak masuk dan berpose manis',d:3,f:'foto',then:[
-      [F,'Satu strip saja. Pose biasa.','s'],
-      [N,'Foto pertama sampai ketiga biasa saja. Foto keempat: kami berdua menoleh ke arah yang sama, tersenyum tanpa sengaja. Blitz menangkapnya persis.'],
-      [T,'Yang keempat itu... bagus.','s']
-    ]},
-    {t:'Menolak karena malu',d:-2,then:[
-      [F,'Nggak ah. Aku... tidak bisa difoto.','s'],
-      [T,'Oh... iya sih.','b'],
-      [N,'Dia berjalan menjauh dari mesin itu, tapi sempat menoleh sekali. Aku langsung menyesal.']
-    ]}
-  ]}},
-  {if:s=>s.flags.foto?[
-    [N,'Dua strip foto keluar dari mesin. Dia memberiku satu, dan menyimpan satu untuk dirinya.'],
-    [T,'Satu buat kamu, satu buat aku. Jangan hilang ya.','s'],
-    [F,'Siap. Akan kujaga baik-baik.','n'],
-    [T,'Kalau nanti ada foto lagi, mau?','s'],
-    {choice:{q:'Dia menunggu jawabanku.',opts:[
-      {t:'Janji foto lagi saat festival sekolah',d:4,f:'janji',then:[
-        [F,'Festival sekolah bulan depan. Janji, kita foto lagi di sana.','h'],
-        [T,'Janji ya? Aku catat.','h'],
-        [F,'Catat di mana?','m'],
-        [T,'Di sini.','s'],
-        [N,'Dia menunjuk dadanya sendiri, lalu langsung memalingkan wajah, malu.']
-      ]},
-      {t:'“Lihat nanti saja”',d:0,then:[
-        [F,'Lihat nanti saja. Siapa tahu ada mesin lain.','n'],
-        [T,'Boleh.','n']
-      ]}
-    ]}}
-  ]:[
-    [T,'Tidak apa-apa. Mungkin lain kali.','n'],
-    [N,'Aku mengangguk. Tapi dalam hati aku berjanji: lain kali, aku yang tidak akan menolak.']
-  ]},
-  [T,'Firjan, terima kasih sudah menemaniku hari ini. Aku senang banget.','h'],
-  [F,'Aku juga. Senang. Terima kasih sudah... mengajakku ngobrol terus.','s'],
-  [T,'Hehe... sama-sama!','h'],
-  [N,'Aku mengucapkan hal yang seharusnya sudah kuucapkan dari lama. Dan dunia tidak runtuh. Malah rasanya lebih ringan.'],
   {bg:'perpus'},{stage:['F']},
-  [N,'Senin sore aku ke perpustakaan mengembalikan buku. Dari balik rak tinggi, aku melihat Teppi. Dan di depannya duduk Kak Dimas, peringkat satu, pemenang seleksi olimpiade, dengan buku kalkulus tebal terbuka di antara mereka.'],
-  [N,'Teppi mencatat serius. Kak Dimas menjelaskan sambil menunjuk-nunjuk kertas. Mereka tampak akrab. Teppi bahkan tertawa kecil, tawa yang kukira hanya untukku.'],
-  [N,'Dadaku seperti tersangkut sesuatu. Ini perasaan baru, dan aku tidak suka nama yang terlintas di kepalaku: cemburu.'],
+  [N,'Senin sore aku ke perpustakaan mengembalikan buku. Dari balik rak tinggi, aku melihat Teppi. Dan di depannya duduk Kak Dimas, peringkat satu, pemenang seleksi olimpiade, dengan buku tebal terbuka di antara mereka.'],
+  [N,'Teppi bicara pelan, wajahnya serius. Kak Dimas mengangguk, mencatat sesuatu, sesekali menunjuk halaman. Mereka terlihat akrab. Teppi menunduk dan menutupi wajah dengan kedua tangan, lalu tertawa kecil.'],
+  [N,'Dadaku seperti tersangkut sesuatu. Aku tahu nama perasaan itu, dan aku tidak suka nama itu.'],
   {choice:{q:'Aku berdiri di balik rak sambil memeluk buku Fisika. Aku...',opts:[
     {t:'Menghampiri mereka dan menyapa seperti biasa',d:4,f:'tanya',then:[
       {stage:['F','T']},
-      [F,'Hai, Teppi. Kak Dimas.','n'],
+      [F,'Hai, Teppi. Kak Dimas.','k'],
       [T,'FIRJAN?! Kamu sudah lama di situ?!','o'],
-      [N,'Teppi cepat-cepat menyembunyikan buku catatannya di balik punggung. Wajahnya merah sampai ke ujung jepit kuning.'],
+      [N,'Teppi cepat-cepat menutup buku catatannya dan menaruhnya di pangkuan. Wajahnya merah sampai ke ujung jepit kuning.'],
       [M,'Kami cuma membahas kalkulus.','n'],
-      [T,'Iya! Kalkulus! Cuma kalkulus! Tidak ada yang lain! Boleh nanya, kamu mau es krim?','o'],
+      [T,'Iya! Kalkulus! Cuma kalkulus! Tidak ada yang lain!','o'],
       [F,'Teppi, kenapa kamu panik?','m'],
       [T,'Nanti kamu juga tahu!','o'],
       [N,'Aku tidak tahu apa yang dia sembunyikan. Tapi caranya menyembunyikan terlalu lucu untuk dicurigai.']
     ]},
     {t:'Pergi diam-diam dan pura-pura tidak melihat',d:-3,f:'cemburu',then:[
       [N,'Aku meletakkan buku di meja pengembalian dan keluar tanpa suara. Di koridor, aku mengatakan pada diri sendiri bahwa aku tidak peduli. Diri sendiri tidak percaya.'],
-      [N,'Keesokan harinya Teppi menempel post-it di mejaku: “Kemarin kamu ke perpus ya? Kata Bu Lina ada yang balikin buku tapi tidak nyapa. Aku jadi kepikiran. :(”'],
+      [N,'Keesokan harinya Teppi menempel post-it di mejaku: “Kemarin kamu ke perpus ya? Kata Bu Lina ada yang balikin buku tapi tidak nyapa. Aku jadi kepikiran.”'],
       [N,'Dia mengira aku marah padanya. Aku bahkan belum tahu aku sedang apa.']
     ]},
     {t:'Mengintip lebih lama, mencoba menguping',d:-1,f:'kuping',then:[
-      [T,'...Kalau pertanyaanku terlalu gampang, dia pasti bosan.','b'],
-      [M,'Dia tidak akan bosan. Percaya sama Kakak.','n'],
+      [T,'...Kalau aku terlalu berisik, dia pasti sebal.','b'],
+      [M,'Dia tidak akan sebal. Percaya sama Kakak.','n'],
       [N,'Dia? Siapa dia? Otakku langsung menyusun tiga skenario, dan semuanya buruk.'],
       [B,'Sedang apa kamu berdiri di balik rak sejarah, Nak?','o'],
       [F,'Eh! Mencari buku, Bu! Buku... tentang berdiri!','k'],
@@ -929,63 +939,31 @@ const chapters=[
 ]},
 
 /* ---------- BAB 7 ---------- */
-{label:'Bab 7',title:'Tim Turunan',sub:'Cerdas cermat, dan satu kalimat yang salah dengar',nodes:[
-  {bg:'kelas'},{stage:['F']},
-  [N,'Pagi itu, di dalam laci mejaku, ada lipatan kertas kecil lagi. Tulisan yang sama: kotak-kotak, tegak, rapi.'],
-  {postit:'Besok ada satu soal yang tidak bisa dijawab sendirian. Jangan terlalu bangga. Jangan terlalu takut. — Seseorang yang pernah menunduk juga',from:'Catatan tanpa nama, yang kedua'},
-  [N,'Soal yang tidak bisa dijawab sendirian? Siapa pun penulisnya, dia tahu sesuatu tentang festival ini yang tidak kuketahui.'],
-  {stage:['F','T']},
+{label:'Bab 7',title:'Tim Turunan',sub:'Cerdas cermat, dan seseorang yang bukan aku',nodes:[
+  {bg:'kelas'},{stage:['F','T']},
   [D,'Pengumuman! Lomba cerdas cermat festival sekolah. Perwakilan kelas kita: Firjan dan Teppi! Tidak ada protes!','h'],
+  [T,'...Berdua? Kami berdua?','o'],
+  [D,'Nilai Fisika dan Matematika tertinggi. Itu logika, Teppi.','m'],
   [R,'Gue protes. Kenapa bukan gue?','o'],
   [D,'Karena nilai Fisika lo empat puluh.','m'],
   [R,'Itu nilai yang jujur.','m'],
-  [T,'Kita satu tim! Nama tim kita: Tim Turunan! Gimana?','o'],
-  [F,'Itu... nama yang bagus.','s'],
-  [N,'Hari-hari latihan berikutnya jadi rutinitas favoritku. Teppi melempar soal cepat, aku menjawab. Aku melempar balik, dia menjawab. Lama-lama aku bisa membaca kapan dia akan bertanya, dan dia bisa membaca kapan aku butuh jeda.'],
-  [N,'Aku baru sadar, kalimatku sudah jarang terputus. Dengan Raka, dengan Nadia, bahkan dengan Bu Lina penjaga perpustakaan. Semua gara-gara seorang cewek yang tidak pernah berhenti bertanya.'],
-  [N,'Sore itu aku turun ke ruang OSIS untuk mengambil kertas soal latihan. Waktu kembali, aku berhenti di depan pintu kelas karena mendengar suara Teppi dan Nadia dari dalam.'],
+  [N,'Teppi menatapku, lalu menatap lantai. Aku mengangguk kecil. Kami menyepakati sesuatu tanpa bicara. Itu bakat baru kami.'],
+  [N,'Latihan pertama di perpustakaan jadi percobaan komunikasi paling aneh dalam sejarah sekolah ini. Kami menulis soal di kertas, menggesernya ke seberang meja, dan menjawabnya dengan tulisan juga.'],
   {stage:['F']},
-  [T,'Nad, aku kayaknya harus berhenti nanya-nanya Firjan terus.','b'],
-  [D,'Lho, kenapa tiba-tiba?','o'],
-  [N,'Bagian tengah kalimat Teppi tertutup suara drum dari lapangan. Yang kudengar jelas hanya sisanya.'],
-  [T,'...jadi lebih baik aku mengurangi. Takut mengganggu dia.','b'],
-  [N,'Berhenti. Mengurangi. Mengganggu. Tiga kata itu berputar di kepalaku seperti mesin cuci.'],
-  {choice:{q:'Apa yang harus kulakukan?',opts:[
-    {t:'Tenang. Tanya langsung ke Teppi nanti',d:5,then:[
-      [N,'Aku menarik napas dalam-dalam. Dulu aku selalu menyimpulkan sendiri dan hasilnya salah. Kali ini aku akan bertanya.'],
-      [N,'Aku masuk seperti biasa dan meletakkan kertas soal di meja. Teppi tersenyum seperti biasa. Aku membalas senyumnya dengan sedikit usaha.']
-    ]},
-    {t:'Tanya Nadia dulu',d:1,then:[
-      [N,'Aku mencegat Nadia di koridor sepuluh menit kemudian.'],
-      [F,'Nad, tadi aku dengar sedikit. Teppi mau berhenti... bicara denganku?','b'],
-      [D,'Ya ampun, kamu dengar? Firjan, tanya Teppi sendiri. Janji, ini tidak seburuk yang kamu pikir.','b'],
-      [F,'Tapi dia bilang mengganggu.','n'],
-      [D,'Tanya dia langsung. Titik.','n']
-    ]},
-    {t:'Menjauh dan memberi ruang',d:-7,f:'dingin',then:[
-      [N,'Aku memutuskan memberi ruang. Keputusan yang terdengar bijak, sampai aku mempraktikkannya dengan cara paling menyedihkan: tidak bicara sama sekali.'],
-      {stage:['F','T']},
-      [T,'Firjan, kamu baik-baik saja?','s'],
-      [F,'Baik.','n'],
-      [T,'Kamu kelihatan beda hari ini.','b'],
-      [F,'Tidak apa-apa. Cuma capek.','n'],
-      [R,'Bro, lo ngomong kayak robot. Ada apa?','o'],
-      [N,'Teppi menunduk dan kembali mencatat. Satu garis di bukunya meleset dari kotak. Dia menghapusnya pelan-pelan.'],
-      [N,'Aku tahu aku bersikap bodoh. Tapi aku belum tahu cara berhenti.']
-    ]}
-  ]}},
-  {bg:'perpus'},{stage:['F']},
+  [N,'Pagi sebelum festival, di dalam laci mejaku ada lipatan kertas lagi. Tulisan yang sama.'],
+  {postit:'Besok ada satu soal yang tidak bisa dijawab sendirian. Jangan terlalu bangga. Jangan terlalu takut. — Seseorang yang pernah menunduk juga',from:'Catatan tanpa nama, yang ketiga'},
+  {bg:'perpus'},
   [N,'Sehari sebelum festival, aku berlatih sendirian di perpustakaan. Langkah kaki berhenti tepat di belakangku.'],
   [M,'Soal nomor tujuh. Rumusmu benar, tapi satuannya terbalik.','n'],
   [F,'Kak Dimas?','o'],
   [N,'Kak Dimas. Peringkat satu. Pemenang seleksi olimpiade. Orang yang selisih dua poinnya masih mengganggu tidurku.'],
   [M,'Boleh duduk? Dan tolong jangan hang. Sekali ini saja.','m'],
-  [N,'Dia mengeluarkan pulpen hitam dan menulis satu kalimat di pinggir kertasku. Kotak-kotak, tegak, rapi. Tulisan yang sama dengan dua lipatan kertas di sakuku.'],
+  [N,'Dia mengeluarkan pulpen hitam dan menulis satu kalimat di pinggir kertasku. Kotak-kotak, tegak, rapi. Tulisan yang sama dengan tiga lipatan kertas di sakuku.'],
   [F,'Catatan... tanpa nama itu. Dari Kakak?','o'],
   [M,'Seseorang yang pernah menunduk juga. Itu aku.','n'],
   {if:s=>s.flags.tebak_teppi?[
     [F,'Aku kira Teppi...','b'],
-    [M,'Banyak orang kira begitu. Teppi malah selalu bertanya pada siapa pun, tapi tidak pernah menyembunyikan apa-apa.','m']
+    [M,'Banyak orang kira begitu. Teppi menulis dengan huruf bulat dan miring, penuh tanda seru.','m']
   ]:[
     [F,'Aku sama sekali tidak menyangka.','o'],
     [M,'Itu intinya. Kalau kamu menyangka, bukan rahasia namanya.','m']
@@ -994,32 +972,36 @@ const chapters=[
   {if:s=>(s.flags.cemburu||s.flags.kuping)?[
     [F,'Kak... waktu itu aku melihat Kakak dan Teppi di perpustakaan.','b'],
     [M,'Yang di balik rak itu kamu, ya? Aku melihat sepatumu.','m'],
-    [F,'Itu... tidak sengaja.','k'],
-    [M,'Teppi minta diajari kalkulus lanjutan. Katanya supaya pertanyaannya tidak membosankan untukmu. Katanya kamu pasti bosan kalau dia cuma bertanya hal-hal gampang.','n'],
-    [N,'Cemburu itu mencair dan berubah menjadi sesuatu yang jauh lebih hangat, dan jauh lebih membingungkan.']
+    [F,'Itu... tidak sengaja.','k']
   ]:[
-    [F,'Kak, waktu itu Teppi menyembunyikan buku catatannya waktu aku datang.','n'],
-    [M,'Itu catatan kalkulus yang dia pelajari diam-diam. Katanya supaya pertanyaannya tidak membosankan untukmu.','n'],
-    [N,'Seorang cewek mempelajari kalkulus lanjutan hanya agar pertanyaannya layak kudengar. Aku tidak tahu harus tertawa atau menangis.']
+    [F,'Kak, waktu itu Teppi menyembunyikan buku catatannya waktu aku datang.','n']
   ]},
-  [M,'Satu hal lagi. Aku tidak ikut lomba besok. Tapi aku yang menyusun soal-soalnya.','m'],
-  [F,'Jadi Kakak membocorkan soal?','o'],
-  [M,'Tidak. Tapi aku menaruh satu soal yang hanya bisa dijawab kalau kalian berdua percaya satu sama lain.','n'],
+  [M,'Teppi datang minta nasihat. Dia bertanya bagaimana caranya bicara dengan seseorang yang membuat kata-katanya hilang. Dia tidak menyebut nama.','n'],
+  [N,'Seseorang. Lagi-lagi seseorang. Dadaku turun seperti lift yang kabelnya putus.'],
+  [F,'Jadi... bukan Kakak?','k'],
+  [M,'Bukan. Aku sudah punya pacar di kelas dua belas. Namanya Salsa, dan dia lebih galak daripada Bu Sari.','m'],
+  [F,'Lalu siapa?','o'],
+  [M,'Tanyakan sendiri. Bagian itu tidak bisa dibantu catatan.','n'],
+  {if:s=>s.flags.baca?[
+    [M,'Satu hal lagi. Kalau kamu menemukan sesuatu yang bukan milikmu, kembalikan. Tapi kalau sudah terlanjur dibaca, jujurlah. Itu jauh lebih baik daripada pura-pura bersih.','n']
+  ]:[
+    [M,'Dan satu lagi. Dia anak yang jujur. Kalau kamu bertanya dengan tulus, dia akan menjawab.','n']
+  ]},
+  [M,'Satu hal terakhir. Aku tidak ikut lomba besok. Tapi aku yang menyusun soal-soalnya. Ada satu soal yang hanya bisa dijawab kalau kalian berdua percaya satu sama lain.','m'],
   {choice:{q:'Kak Dimas menutup bukunya dan menatapku, menunggu. Aku...',opts:[
-    {t:'Tanya: “Kak, bagaimana caranya berhenti hang?”',d:4,f:'nasihat',then:[
+    {t:'Tanya: “Kak, bagaimana caranya berhenti takut memulai?”',d:4,f:'nasihat',then:[
       [M,'Berhenti memikirkan kalimat yang sempurna. Mulai dari kalimat yang jujur, sekecil apa pun.','n'],
-      [M,'Kalimat jujur itu biasanya terdengar aneh, tapi orang yang tepat akan mendengarkannya dengan serius.','s'],
+      [M,'Orang yang tepat akan mendengarkannya dengan serius, walau terdengar aneh.','s'],
       [N,'Aku menulis kalimat itu di pinggir bukuku, di bawah tulisan kotak-kotaknya.']
     ]},
     {t:'Bilang: “Aku tidak butuh dikasihani.”',d:-1,f:'gengsi',then:[
       [F,'Aku tidak butuh dikasihani, Kak.','n'],
-      [M,'Bagus. Gengsi itu tanda kamu masih mau bertarung. Aku dulu hampir menyerah tanpa pernah merasa gengsi sama sekali.','m'],
+      [M,'Bagus. Gengsi itu tanda kamu masih mau bertarung. Aku dulu hampir menyerah tanpa merasa gengsi sama sekali.','m'],
       [N,'Dia justru tersenyum. Aku jadi bingung kenapa aku yang merasa kalah.']
     ]},
-    {t:'Tanya: “Kakak suka Teppi?”',d:2,then:[
-      [M,'Hah?! Tidak! Aku sudah punya pacar di kelas dua belas. Namanya Salsa, dan dia lebih galak daripada Bu Sari.','o'],
-      [F,'Jadi... itu bukan...?','o'],
-      [M,'Bukan. Kamu ini, sekali curiga langsung percaya.','m'],
+    {t:'Tanya: “Kakak yakin orangnya bukan Kakak?”',d:2,then:[
+      [M,'Hah?! Tidak! Tentu saja tidak!','o'],
+      [M,'Kamu ini. Sekali curiga langsung percaya.','m'],
       [N,'Aku menyimpan fakta bahwa Salsa lebih galak daripada Bu Sari sebagai informasi paling berharga hari itu.']
     ]}
   ]}},
@@ -1027,109 +1009,132 @@ const chapters=[
   {bg:'festival'},{stage:['F','T']},
   [N,'Hari festival. Lampion digantung di sepanjang halaman sekolah, dan bau jagung bakar bercampur dengan musik dari panggung kecil.'],
   [N,'Lomba cerdas cermat digelar di panggung halaman. Penonton memenuhi bangku plastik. Raka dan Nadia duduk di barisan depan sambil membawa spanduk tulisan tangan: “TIM TURUNAN HARUS MENANG”.'],
-  {if:s=>s.flags.dingin?[
-    [N,'Pembawa acara membacakan soal terakhir: “Dua orang menjawab bersamaan, jawabannya berbeda. Siapa yang benar?” Soal Kak Dimas. Aku mengerti terlambat.'],
-    [N,'Skor imbang. Tinggal satu pertanyaan. Tidak ada waktu berpikir panjang. Aku menoleh ke Teppi, dia menoleh ke arahku, dan di detik yang sama kami berdua menjawab dengan jawaban yang berbeda.'],
-    [N,'Jawabannya benar milik Teppi. Tapi karena kami menjawab bersamaan, juri menyatakan tidak sah. Kami kalah satu poin.'],
-    [T,'Tidak apa-apa! Kita tetap seru!','h'],
-    [N,'Dia tersenyum, tapi matanya tidak ikut tersenyum. Dan itu salahku.']
-  ]:[
+  {if:s=>s.love>=40?[
     [N,'Pembawa acara membacakan soal terakhir: “Dua orang menjawab bersamaan, jawabannya berbeda. Siapa yang benar?” Soal yang hanya bisa dijawab kalau dua orang saling percaya. Aku teringat pesan Kak Dimas.'],
     [N,'Skor imbang. Tinggal satu pertanyaan. Aku menoleh ke Teppi, dia menoleh padaku, dan tanpa kata aku tahu: biar dia yang jawab.'],
-    [T,'Jawabannya: seperempat!','o'],
+    [T,'Jawabannya: yang menjawab lebih dulu dengan alasan yang bisa dibuktikan!','o'],
     [N,'Juri mengangguk. Tepuk tangan menggelegar. Tim Turunan menang.'],
     [T,'FIRJAN! KITA MENANG!','o'],
-    [N,'Dia meraih kedua tanganku dan melompat-lompat. Biasanya aku akan membeku. Kali ini aku ikut melompat kecil, dan entah kenapa tidak terasa memalukan.']
-  ]},
-  {if:s=>s.flags.janji?[
-    [T,'Eh, janji kamu. Foto stiker lagi?','s'],
-    [F,'Janji adalah janji.','h'],
-    [N,'Ada booth foto stiker di sudut halaman. Kami berdesakan di dalamnya dengan Raka mengintip dari tirai dan Nadia berteriak “senyum!”'],
-    [N,'Foto pertama: pose seram. Foto kedua: Teppi pura-pura mau menggigit hidungku. Foto ketiga: dia tertawa, aku menunduk. Foto keempat: kami berdua menatap kamera dengan wajah yang terlalu jujur.'],
-    [T,'Yang terakhir itu... jangan dilihat dulu.','s']
+    [N,'Dia meraih kedua tanganku dan melompat-lompat, lalu tersadar dan melepaskannya dengan wajah merah. Tapi dia tersenyum. Dan sudah lama dia tidak melakukannya padaku.']
   ]:[
-    [N,'Aku tersenyum, tapi hatiku masih menyimpan tiga kata itu: berhenti, mengurangi, mengganggu. Rasanya seperti ada batu kecil di dalam sepatu.']
+    [N,'Pembawa acara membacakan soal terakhir: “Dua orang menjawab bersamaan, jawabannya berbeda. Siapa yang benar?” Soal Kak Dimas. Aku mengerti terlambat.'],
+    [N,'Skor imbang. Tinggal satu pertanyaan. Aku menoleh ke Teppi, dia menoleh ke arahku, dan di detik yang sama kami berdua menjawab dengan jawaban yang berbeda.'],
+    [N,'Jawaban yang benar milik Teppi. Tapi karena kami menjawab bersamaan, juri menyatakan tidak sah. Kami kalah satu poin.'],
+    [T,'Tidak apa-apa! Kita tetap seru!','h'],
+    [N,'Dia tersenyum, tapi matanya tidak ikut tersenyum. Aku tahu kekalahan ini bukan soal poin.']
   ]},
-  [T,'Firjan, setelah acara selesai, bisa kita bicara? Di atap sekolah. Ada yang mau kukatakan.','s'],
+  [T,'Firjan... setelah acara selesai, bisa kita bicara? Di atap sekolah. Ada yang mau kukatakan. Aku sudah latihan tiga ratus kali di depan cermin.','s'],
   [F,'Boleh.','n'],
   [N,'Aku tidak tahu apa yang akan dia katakan. Tapi untuk pertama kalinya, aku tidak tahu apakah harus takut atau berharap.']
 ]},
 
 /* ---------- BAB 8 ---------- */
-{label:'Bab 8',title:'Atap Sekolah',sub:'Satu pertanyaan yang sebenarnya sudah ada jawabannya',nodes:[
+{label:'Bab 8',title:'Atap Sekolah',sub:'Satu pertanyaan, dua jawaban, dan terlalu banyak diam',nodes:[
   {bg:'atap'},{stage:['F','T']},
   [N,'Tangga menuju atap berderit di setiap anak tangga. Pintu besinya tidak pernah dikunci, tapi hanya sedikit murid yang tahu. Dari sini seluruh Kotabaru terlihat kecil, dan langit berwarna jingga ungu seperti cat air yang tumpah.'],
-  [T,'Firjan, aku mau ngomong sesuatu. Tapi aku tidak tahu mulai dari mana. Ini pertama kalinya aku tidak tahu mau ngomong apa! Aneh banget ya?','o'],
-  [F,'Tidak aneh. Eh, maksudku, ya. Sedikit.','s'],
-  [T,'Kemarin aku ngomong ke Nadia soal berhenti nanya-nanya kamu. Kamu dengar, kan? Nadia bilang kamu mendengar sebagian.','s'],
-  [F,'Iya. A-aku dengar “berhenti nanya” dan “mengganggu”.','b'],
-  [T,'Itu bukan karena kamu mengganggu!! Itu karena aku yang... aku mengganggu kamu. Atau tidak! Ah, aku bingung!','o'],
-  [F,'Teppi. Pelan-pelan.','n'],
-  [N,'Aku sendiri kaget dengan nada suaraku: tenang. Tidak tergagap. Seperti orang yang akhirnya paham bagaimana cara bicara.'],
-  [T,'...Baiklah. Aku tarik napas.','s'],
-  [T,'Kalimat yang kamu tidak dengar itu begini: tiap kali aku nanya kamu, dan kamu menjelaskan pelan-pelan sambil gugup, aku kagum. Terus jantungku jadi aneh. Aku takut kamu menyadarinya.','s'],
-  [F,'Menyadari... apa?','o'],
-  [T,'Bahwa sebagian pertanyaanku... aku sebenarnya sudah tahu jawabannya. Aku cuma ingin mendengar kamu menjelaskan. Soalnya kalau kamu menjelaskan, wajahmu hidup banget.','s'],
-  [N,'Aku terdiam. Seorang cewek pintar baru saja mengaku bahwa dia berpura-pura bertanya hanya untuk mendengar suaraku. Rasanya seperti diberi piala yang tidak pernah kudaftarkan.'],
-  [F,'Kamu bohong soal pertanyaannya?','o'],
-  [T,'Sedikit! Tapi tidak semuanya! Gerak parabola itu beneran bingung, dan turunan juga!','o'],
-  [F,'Dan langkah ketiga yang negatif itu?','m'],
-  [T,'Itu aku beneran lihat salahmu! Aku jujur untuk bagian itu!','l'],
-  [N,'Kami berdua tertawa. Tawa lega yang membuat bahu yang tegang akhirnya turun.'],
-  {if:s=>s.flags.jujur?[
-    [T,'Kamu ingat gak? Di perpustakaan kamu bilang gugupmu berkurang kalau sama aku. Aku simpan kalimat itu di kepalaku, dan aku putar tiap malam.','s'],
-    [F,'Kamu... memutarnya?','o'],
-    [T,'Berkali-kali. Seperti lagu kesukaan.','s']
+  [T,'Firjan, boleh aku minta sesuatu?','s'],
+  [F,'Boleh.','k'],
+  [T,'Kali ini kamu yang bertanya. Aku sudah terlalu banyak bertanya. Aku mau lihat rasanya jadi yang menjawab.','b'],
+  [N,'Dunia terbalik. Selama ini dia yang bertanya dan aku yang menjawab. Sekarang aku memegang kendali, dan aku belum pernah memegang apa pun yang lebih berat.'],
+  {choice:{q:'Satu pertanyaan, dan jawabannya mungkin mengubah segalanya. Aku bertanya...',opts:[
+    {t:'“Kenapa kamu diam setiap kali aku ada di dekatmu?”',d:4,f:'langsung',then:[
+      [F,'Kenapa kamu diam setiap kali aku ada di dekatmu? Aku... ingin tahu. Apa pun jawabannya.','n'],
+      [N,'Pertanyaan itu terdengar polos di udara sore. Jauh lebih polos daripada yang kubayangkan selama sebelas hari.']
+    ]},
+    {t:'“Siapa orang yang membuat lidahmu nyangkut?”',d:2,f:'berani',then:[
+      [F,'Siapa... orang yang membuat lidahmu nyangkut? Aku ingin tahu. Walau aku mungkin tidak siap.','k'],
+      [T,'Kamu... benar-benar ingin tahu?','s'],
+      [F,'Iya.','n']
+    ]},
+    {t:'“Apa aku melakukan kesalahan?”',d:-1,then:[
+      [F,'Apa... aku melakukan kesalahan? Kalau iya, aku mau minta maaf. Aku tidak tahu salahku apa.','b'],
+      [T,'Tidak! Kamu tidak salah sedikit pun!','o'],
+      [N,'Dia tampak menyesal dengan kalimat itu keluar dari mulutku. Pertanyaan yang kupilih terdengar seperti orang yang meminta hukuman.']
+    ]}
+  ]}},
+  [T,'Aku... tarik napas dulu.','s'],
+  {if:s=>s.love>=40?[
+    [T,'Orang itu kamu.','s'],
+    [N,'Tiga kata, tanpa tanda seru. Tapi lebih keras daripada seribu kalimat yang pernah dia lemparkan padaku.'],
+    [T,'Tiap kali kamu menjelaskan sesuatu dengan pelan sambil gugup, aku kagum. Lama-lama kagum itu berubah jadi sesuatu yang bikin aku lupa semua pertanyaanku. Padahal aku punya sembilan setiap hari.'],
+    [T,'Aku takut kalau terlalu berisik, kamu bosan. Aku takut kalau terlalu diam, kamu mengira aku tidak peduli. Ternyata aku memilih dua-duanya secara bergantian.','b'],
+    [F,'Jadi minggu-minggu ini... diammu bukan karena kamu tidak suka?','o'],
+    [T,'Aku justru terlalu suka sampai tidak tahu harus ngapain!','o'],
+    [N,'Aku tertawa. Bukan karena lucu, tapi karena dadaku terlalu penuh dan tawa adalah satu-satunya jalan keluar.'],
+    [F,'Aku juga. Diamku bukan karena tidak peduli. Tapi karena aku takut salah memulai.','s']
+  ]:s.love>=22?[
+    [T,'Aku diam bukan karena aku tidak mau bicara padamu.','s'],
+    [T,'Aku diam karena... aku takut. Takut merusak sesuatu yang bagus. Kalau aku bicara terlalu banyak, takutnya malah salah bicara. Kalau aku diam, takutnya kamu mengira aku jauh.','b'],
+    [F,'Kamu tidak pernah jauh. Tapi aku mengira begitu.','b'],
+    [T,'Aku tahu. Aku lihat bahumu turun tiap kali aku menjawab pendek.','s'],
+    [N,'Dua orang yang saling melihat bahu turun, tanpa pernah mengatakan apa-apa. Ini kisah paling bodoh yang pernah kulibatkan diri di dalamnya.']
   ]:[
-    [T,'Jadi kamu tidak marah?','s'],
-    [F,'Aku tidak marah. Aku malah merasa lebih hidup sejak kamu datang.','s']
+    [T,'Aku kira kamu tidak nyaman denganku.','b'],
+    [F,'Tidak nyaman?','o'],
+    [T,'Kamu selalu menunduk. Menjawab pendek. Menggeser kursi. Aku kira aku terlalu berisik dan kamu terpaksa tahan. Jadi aku berhenti mengganggu.','b'],
+    [F,'Aku menunduk karena... kalau menatapmu, otakku hang.','k'],
+    [T,'Hang... karena apa?','o'],
+    [F,'Karena... karena kamu.','s'],
+    [N,'Jawaban yang selama dua bulan kutahan. Ternyata cuma tiga kata dan tidak membunuhku.']
   ]},
-  [N,'Sunyi sebentar. Angin dari arah laut menggoyangkan rambutnya. Aku menarik napas dalam-dalam.'],
-  {choice:{q:'Saatnya jujur. Aku bilang...',opts:[
+  {if:s=>s.flags.baca?[
+    [T,'Eh, Firjan. Halaman bukuku yang terjatuh di halte... kamu baca, kan?','o'],
+    {choice:{q:'Dia bertanya langsung. Aku tidak ingin menambah satu kebohongan lagi. Aku...',opts:[
+      {t:'Jujur: “Aku baca. Maaf.”',d:3,f:'jujur',then:[
+        [F,'Aku baca. Sebagian. Maaf. Seharusnya aku tidak membukanya.','k'],
+        [T,'...Terima kasih sudah jujur. Aku sudah curiga.','s'],
+        [T,'Kalau begitu, kamu sudah tahu setengah. Tinggal setengah lagi.','s']
+      ]},
+      {t:'Mengelak: “Tidak, aku tidak baca.”',d:-4,then:[
+        [F,'Tidak. Aku tidak baca.','k'],
+        [T,'Oh. Oke.','z'],
+        [N,'Dia menatapku, lalu menunduk. Dia tahu. Aku tahu dia tahu. Percakapan ini kehilangan sesuatu yang tidak bisa kuambil kembali begitu saja.']
+      ]}
+    ]}}
+  ]:[
+    [N,'Angin dari arah laut menggoyangkan rambutnya. Aku menarik napas dalam-dalam.']
+  ]},
+  {choice:{q:'Saatnya jujur, dengan kalimat yang sederhana. Aku bilang...',opts:[
     {t:'“Aku suka kamu, Teppi.”',d:8,f:'berani',then:[
-      [F,'Teppi, aku... aku suka kamu. Dari hari kamu bertanya soal turunan dengan mata berbinar. Aku tidak tahu kapan tepatnya. Tapi kamu alasanku akhirnya belajar bicara.','s'],
-      [T,'Dari... hari pertama?','o'],
-      [F,'Mungkin dari jabat tangan yang dingin dan berkeringat itu. Aku belum bisa memastikan.','n'],
-      {if:s=>s.love>=46?[
+      [F,'Teppi, aku suka kamu. Mungkin dari hari kamu bertanya soal turunan dengan mata berbinar. Aku tidak tahu kapan tepatnya. Tapi sejak itu semua terasa lebih berwarna.','s'],
+      {if:s=>s.love>=40?[
         [T,'Kamu tahu... aku juga.','s'],
-        [T,'Aku juga suka kamu, Firjan. Dari saat kamu menjelaskan kubus. Atau mungkin dari payung biru itu.','h'],
+        [T,'Aku juga suka kamu, Firjan. Dari hari kamu menjelaskan kubus. Atau mungkin dari payung biru itu.','h'],
         [F,'Payung biru berjasa besar.','l'],
         [N,'Dia tersenyum, dan aku bersumpah itu senyum terindah yang pernah kulihat. Padahal aku sudah melihat ratusan senyum Teppi sekarang.']
-      ]:s.love>=30?[
+      ]:s.love>=22?[
         [T,'Firjan... aku kaget. Dan senang. Tapi aku butuh waktu. Semuanya masih baru buatku.','s'],
         [F,'Tidak apa-apa. Aku bisa menunggu.','n'],
         [T,'Terima kasih sudah jujur.','h']
       ]:[
-        [T,'Firjan... terima kasih. Tapi aku belum bisa. Kita masih baru banget saling kenal.','b'],
+        [T,'Firjan... terima kasih. Tapi aku belum bisa. Aku masih bingung dengan perasaanku sendiri.','b'],
         [F,'Oh. Iya. Aku paham.','b'],
         [N,'Dadaku terasa kosong sedikit. Tapi aku lega sudah jujur.']
       ]}
     ]},
-    {t:'“Setelah ujian akhir, ada yang ingin kukatakan.”',d:6,f:'menunggu',then:[
-      [F,'Setelah ujian akhir semester selesai, aku ingin mengatakan sesuatu yang penting. Boleh aku bilang waktu itu?','s'],
-      {if:s=>s.love>=46?[
-        [T,'Boleh. Tapi aku sudah bisa menebak!','s'],
-        [T,'Aku tunggu. Aku akan mengisi waktu dengan menebak-nebak!','h'],
-        [F,'Jangan terlalu yakin dengan tebakanmu.','m'],
-        [T,'Pertanyaan: aku benar?','m'],
-        [F,'Tunggu dua minggu.','h']
-      ]:s.love>=30?[
-        [T,'Boleh. Aku akan menunggu. Terima kasih sudah mau menunggu juga.','s'],
-        [N,'Dia tidak menjawab dengan jelas. Tapi dia tersenyum, dan itu cukup untuk sekarang.']
+    {t:'“Boleh kita mulai dari awal? Aku Firjan. Boleh nanya?”',d:6,f:'ulang',then:[
+      [F,'Boleh kita mulai dari awal? Halo, aku Firjan. Kelas 11 D. Aku... boleh nanya, namamu siapa?','s'],
+      [T,'Hahaha! Kamu tahu namaku!','l'],
+      [F,'Tapi aku belum tahu yang sebenarnya. Aku mau tahu dari kamu.','n'],
+      {if:s=>s.love>=40?[
+        [T,'Aku Teppi. Pindahan dari Banjarmasin. Aku suka gambar, suka teh manis, dan... lagi belajar jadi orang yang tidak lupa pertanyaannya sendiri.','s'],
+        [F,'Itu perkenalan paling bagus yang pernah kudengar.','h'],
+        [T,'Kamu tidak pernah dengar perkenalan lain, kan?','m'],
+        [F,'Aku sudah dengar yang pertama. Dan itu juga bagus.','l']
       ]:[
-        [T,'Terima kasih, Firjan. Kamu teman yang baik.','n'],
-        [N,'Teman yang baik. Dua kata yang manis sekaligus pahit.']
+        [T,'Aku Teppi. Senang berkenalan lagi.','n'],
+        [N,'Dia tersenyum. Sopan. Terlalu sopan. Tapi ini awal. Dan awal kali ini milik kami berdua.']
       ]}
     ]},
     {t:'“Aku senang kita berteman.”',d:0,f:'aman',then:[
       [F,'Terima kasih sudah jujur. Aku senang kita berteman.','h'],
       [T,'Itu saja?','s'],
       [F,'Itu... saja. Eh, tidak. Aku bangga bisa jadi temanmu.','n'],
-      {if:s=>s.love>=30?[
+      {if:s=>s.love>=22?[
         [T,'Aku juga bangga, Firjan.','h'],
         [N,'Mungkin bukan jawaban yang bisa kuberikan sepenuhnya. Tapi dia tersenyum, dan aku menerimanya.']
       ]:[
-        [T,'Oh. Iya. Terima kasih.','n'],
+        [T,'Oh. Iya. Terima kasih.','z'],
         [N,'Percakapan berakhir dengan sopan. Terlalu sopan.']
       ]}
     ]}
@@ -1137,7 +1142,7 @@ const chapters=[
   [N,'Langit mulai gelap. Dari bawah terdengar suara Nadia memanggil: “Firjan! Teppi! Piala belum diambil!”'],
   [T,'Kita dipanggil.','n'],
   [F,'Ayo turun. Sebelum Raka memakai pialanya sebagai topi.','m'],
-  [N,'Kami menuruni tangga berderit itu bersama-sama.']
+  [N,'Kami menuruni tangga berderit itu bersama-sama. Kali ini, tidak ada jarak dua puluh sentimeter di antara bahu kami.']
 ]},
 
 /* ---------- EPILOG ---------- */
